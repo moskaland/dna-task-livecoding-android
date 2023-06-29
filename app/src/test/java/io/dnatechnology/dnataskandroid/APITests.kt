@@ -15,7 +15,7 @@ class PaymentAPITests {
     fun whenCorrectDataThenSuccess() = runBlocking {
         // given
         val paymentRequest = PaymentRequest(
-            transactionUID = "Tr1",
+            transactionID = "Tr1",
             amount = 33.66,
             currency = "EUR",
             cardToken = "Token"
@@ -32,7 +32,7 @@ class PaymentAPITests {
     fun whenIncorrectAmountThenFail() = runBlocking {
         // given
         val paymentRequest = PaymentRequest(
-            transactionUID = "Tr1",
+            transactionID = "Tr1",
             amount = 19.66,
             currency = "EUR",
             cardToken = "Token"
@@ -49,7 +49,7 @@ class PaymentAPITests {
     fun whenIncorrectCurrencyThenFail() = runBlocking {
         // given
         val paymentRequest = PaymentRequest(
-            transactionUID = "Tr1",
+            transactionID = "Tr1",
             amount = 22.66,
             currency = "PLN",
             cardToken = "Token"
@@ -66,7 +66,7 @@ class PaymentAPITests {
     fun whenRevertingCorrectAmountThenSuccess() = runBlocking {
         // given
         val paymentRequest = PaymentRequest(
-            transactionUID = "Tr1",
+            transactionID = "Tr1",
             amount = 12.66,
             currency = "EUR",
             cardToken = "Token"
@@ -83,7 +83,7 @@ class PaymentAPITests {
     fun whenRevertingIncorrectAmountThenFail() = runBlocking {
         // given
         val paymentRequest = PaymentRequest(
-            transactionUID = "Tr1",
+            transactionID = "Tr1",
             amount = 0.66,
             currency = "EUR",
             cardToken = "Token"

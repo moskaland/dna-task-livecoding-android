@@ -13,9 +13,9 @@ class PaymentApiClient {
         delay(2500)
 
         return if (paymentRequest.currency == "EUR" && paymentRequest.amount >= 20.00 ) {
-            PaymentResponse(paymentRequest.transactionUID, PaymentStatus.SUCCESS)
+            PaymentResponse(paymentRequest.transactionID, PaymentStatus.SUCCESS)
         } else {
-            PaymentResponse(paymentRequest.transactionUID, PaymentStatus.FAILED)
+            PaymentResponse(paymentRequest.transactionID, PaymentStatus.FAILED)
         }
     }
 
@@ -25,9 +25,9 @@ class PaymentApiClient {
     suspend fun revert(paymentRequest: PaymentRequest): PaymentResponse {
         delay(500)
         return if (paymentRequest.amount >= 1.00 ) {
-            PaymentResponse(paymentRequest.transactionUID, PaymentStatus.SUCCESS)
+            PaymentResponse(paymentRequest.transactionID, PaymentStatus.SUCCESS)
         } else {
-            PaymentResponse(paymentRequest.transactionUID, PaymentStatus.FAILED)
+            PaymentResponse(paymentRequest.transactionID, PaymentStatus.FAILED)
         }
     }
 }

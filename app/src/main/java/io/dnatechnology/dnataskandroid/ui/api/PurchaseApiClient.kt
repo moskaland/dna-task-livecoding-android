@@ -7,11 +7,11 @@ import java.util.*
 class PurchaseApiClient {
     companion object {
         val productList = listOf(
-            Product("12345", "Premium product",123, 12.33, "EUR", 0.22),
-            Product("12346", "Cheapest product", 30, 2.10, "EUR", 0.18),
-            Product("12347", "Some product",1000, 5.00, "EUR", 0.22),
-            Product("12348", "Other product",2000, 12.33, "EUR", 0.22),
-            Product("12349", "Unavailable product", 0, 10.99, "EUR", 0.23),
+            Product("12345", "Big soda",123, 2.99, "EUR", 0.22),
+            Product("12346", "Medium soda", 30, 1.95, "EUR", 0.22),
+            Product("12347", "Small soda",1000, 1.25, "EUR", 0.22),
+            Product("12348", "Chips",2000, 4.33, "EUR", 0.22),
+            Product("12349", "Snack bar", 0, 10.99, "EUR", 0.23),
         )
     }
 
@@ -90,4 +90,8 @@ data class Product(val productID: String,
                    val maxAmount: Long,
                    val unitNetValue: Double,
                    val unitValueCurrency: String,
-                   val tax: Double)
+                   val tax: Double) {
+    override fun toString(): String {
+        return String.format("%s [ %.2f %s ]", name, unitNetValue * (1.0+ tax), unitValueCurrency)
+    }
+}

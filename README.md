@@ -28,6 +28,13 @@ Please be ready to share Emulator or connected device using [Sharing tool](https
 
 The goal is to implement an app that will work on a POS (point-of-sale) device that will allow to select products from the available set and pay for them with a card.
 
-You should enhance product list with functionality to select/unselect products on the list and show the summary of selected items.
+Task 1:
+As an MVP you should enhance product list with functionality to select/unselect product on the list and ...
 
-Once items are selected you should be able to pay for them using provided APIs.
+Task 2:
+...be able to buy at least one product (MVP approach).
+
+To perform payment you must:
+- initiate purchase transaction
+- call payment API using transaction identifier and card token read from reader API
+- confirm purchase transaction after successful payment

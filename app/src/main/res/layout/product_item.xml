@@ -2,10 +2,11 @@
     <!--  Single List Item Design -->
 
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/label"
+    android:id="@+id/product_label"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_height="wrap_content"
     android:padding="8dp"
+    android:layout_marginVertical="16dp"
     android:background="@color/white"
     android:textSize="16sp"
     android:textStyle="bold" >

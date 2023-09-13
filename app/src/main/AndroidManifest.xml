@@ -14,7 +14,7 @@
         android:theme="@style/Theme.DNATaskAndroid"
         tools:targetApi="31">
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".ui.RootComposeActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.AppCompat.NoActionBar">
@@ -24,14 +24,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ui.compose.RootComposeActivity"
-            android:exported="false"
-            android:theme="@style/Theme.DNATaskAndroid.NoActionBar" />
-        <activity
-            android:name=".ui.viewbased.RootViewActivity"
-            android:exported="false"
-            android:theme="@style/Theme.DNATaskAndroid.NoActionBar" />
     </application>
 
 </manifest>

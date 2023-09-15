@@ -1,19 +1,19 @@
-package com.devmoskal.feature.products
+package com.devmoskal.core.network
 
-import com.devmoskal.feature.products.api.PaymentApiClient
-import com.devmoskal.feature.products.api.PurchaseApiClient
-import com.devmoskal.feature.products.api.data.PaymentRequest
-import com.devmoskal.feature.products.api.data.PaymentStatus
-import com.devmoskal.feature.products.api.data.PurchaseConfirmRequest
-import com.devmoskal.feature.products.api.data.PurchaseRequest
-import com.devmoskal.feature.products.api.data.TransactionStatus
+import com.devmoskal.core.network.mock.MockPaymentApiClient
+import com.devmoskal.core.network.mock.MockPurchaseApiClient
+import com.devmoskal.core.network.model.PaymentRequest
+import com.devmoskal.core.network.model.PaymentStatus
+import com.devmoskal.core.network.model.PurchaseConfirmRequest
+import com.devmoskal.core.network.model.PurchaseRequest
+import com.devmoskal.core.network.model.TransactionStatus
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 
 import org.junit.Assert.*
 
-class PaymentAPITests {
-    private val paymentAPI = PaymentApiClient()
+class MockPaymentAPITests {
+    private val paymentAPI = MockPaymentApiClient()
 
     @Test
     fun whenCorrectDataThenSuccess() = runBlocking {
@@ -101,8 +101,8 @@ class PaymentAPITests {
     }
 }
 
-class PurchaseAPITests {
-    private val purchaseApiClient = PurchaseApiClient()
+class MockPurchaseAPITests {
+    private val purchaseApiClient = MockPurchaseApiClient()
 
     @Test
     fun whenGetProductsThenSuccess() = runBlocking {

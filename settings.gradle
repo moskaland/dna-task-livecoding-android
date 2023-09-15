@@ -16,3 +16,6 @@ rootProject.name = "DNATaskAndroid"
 include ':app'
 include ':feature:products'
 include ':core:designsystem'
+include ':core:model'
+include ':core:network'
+include ':core:service'

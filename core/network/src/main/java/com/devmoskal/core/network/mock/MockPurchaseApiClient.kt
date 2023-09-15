@@ -1,31 +1,33 @@
-package com.devmoskal.feature.products.api
+package com.devmoskal.core.network.mock
 
-import com.devmoskal.feature.products.api.data.PurchaseCancelRequest
-import com.devmoskal.feature.products.api.data.PurchaseConfirmRequest
-import com.devmoskal.feature.products.api.data.PurchaseRequest
-import com.devmoskal.feature.products.api.data.PurchaseResponse
-import com.devmoskal.feature.products.api.data.PurchaseStatusResponse
-import com.devmoskal.feature.products.api.data.TransactionStatus
+import com.devmoskal.core.model.Product
+import com.devmoskal.core.network.PurchaseApiClient
+import com.devmoskal.core.network.model.PurchaseCancelRequest
+import com.devmoskal.core.network.model.PurchaseConfirmRequest
+import com.devmoskal.core.network.model.PurchaseRequest
+import com.devmoskal.core.network.model.PurchaseResponse
+import com.devmoskal.core.network.model.PurchaseStatusResponse
+import com.devmoskal.core.network.model.TransactionStatus
 import kotlinx.coroutines.delay
 import java.util.*
 
-class PurchaseApiClient {
+class MockPurchaseApiClient : PurchaseApiClient {
     companion object {
         val productList = listOf(
-            Product("12345", "Big soda",123, 2.99, "EUR", 0.22),
+            Product("12345", "Big soda", 123, 2.99, "EUR", 0.22),
             Product("12346", "Medium soda", 30, 1.95, "EUR", 0.22),
-            Product("12347", "Small soda",1000, 1.25, "EUR", 0.22),
-            Product("12348", "Chips",2000, 4.33, "EUR", 0.22),
+            Product("12347", "Small soda", 1000, 1.25, "EUR", 0.22),
+            Product("12348", "Chips", 2000, 4.33, "EUR", 0.22),
             Product("12349", "Snack bar", 0, 10.99, "EUR", 0.23),
         )
     }
 
-    suspend fun getProducts(): List<Product> {
+    override suspend fun getProducts(): List<Product> {
         delay(300)
         return productList
     }
 
-    suspend fun initiatePurchaseTransaction(purchaseRequest: PurchaseRequest): PurchaseResponse {
+    override suspend fun initiatePurchaseTransaction(purchaseRequest: PurchaseRequest): PurchaseResponse {
         delay(250)
         if (purchaseRequest.order.isEmpty()) {
             return PurchaseResponse(purchaseRequest.order, UUID.randomUUID().toString(), TransactionStatus.FAILED)
@@ -49,7 +51,7 @@ class PurchaseApiClient {
         }
     }
 
-    suspend fun confirm(purchaseRequest: PurchaseConfirmRequest): PurchaseStatusResponse {
+    override suspend fun confirm(purchaseRequest: PurchaseConfirmRequest): PurchaseStatusResponse {
         delay(250)
         if (purchaseRequest.order.isEmpty()) {
             return PurchaseStatusResponse(purchaseRequest.transactionID, TransactionStatus.FAILED)
@@ -75,28 +77,10 @@ class PurchaseApiClient {
         }
     }
 
-    suspend fun cancel(purchaseRequest: PurchaseCancelRequest): PurchaseStatusResponse {
+    override suspend fun cancel(purchaseRequest: PurchaseCancelRequest): PurchaseStatusResponse {
         delay(250)
         return PurchaseStatusResponse(purchaseRequest.transactionID, TransactionStatus.CANCELLED)
     }
 
 }
 
-/**
- * productID - globally unique product identifier
- * name - display name
- * maxAmount - available quantity of the product
- * unitNetValue - net value of a single item
- * unitValueCurrency - currency name
- * tax - tax to be added to the net value
- */
-data class Product(val productID: String,
-                   val name: String,
-                   val maxAmount: Long,
-                   val unitNetValue: Double,
-                   val unitValueCurrency: String,
-                   val tax: Double) {
-    override fun toString(): String {
-        return String.format("%s [ %.2f %s ]", name, unitNetValue * (1.0+ tax), unitValueCurrency)
-    }
-}

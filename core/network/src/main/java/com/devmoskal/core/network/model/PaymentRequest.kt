@@ -1,4 +1,4 @@
-package com.devmoskal.feature.products.api.data
+package com.devmoskal.core.network.model
 
 data class PaymentRequest(val transactionID: String, val amount: Double, val currency: String, val cardToken: String)
 

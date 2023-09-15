@@ -1,4 +1,4 @@
-package com.devmoskal.feature.products.api.data
+package com.devmoskal.core.network.model
 
 data class PurchaseRequest(val order: Map<String,Long>)
 

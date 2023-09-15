@@ -2,22 +2,21 @@ package com.devmoskal.feature.products
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.devmoskal.feature.products.api.Product
-import com.devmoskal.feature.products.api.PurchaseApiClient
+import com.devmoskal.core.network.PurchaseApiClient
+import com.devmoskal.core.network.mock.MockPurchaseApiClient
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class ProductsModel: ViewModel() {
-
-    val purchaseApiClient: PurchaseApiClient = PurchaseApiClient()
+    val purchaseApiClient: PurchaseApiClient = MockPurchaseApiClient()
 
     private var mutableCart: MutableStateFlow<Set<String>> = MutableStateFlow(setOf())
     var cart: StateFlow<Set<String>> = mutableCart
 
-    private var mutableProducts = MutableStateFlow<List<Product>?>(null)
-    var products: StateFlow<List<Product>?> = mutableProducts
+    private var mutableProducts = MutableStateFlow<List<com.devmoskal.core.model.Product>?>(null)
+    var products: StateFlow<List<com.devmoskal.core.model.Product>?> = mutableProducts
 
     fun getProducts() {
         viewModelScope.launch {

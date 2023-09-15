@@ -11,6 +11,19 @@ fun NavGraphBuilder.productsScreen(
     productsViewModel: ProductsViewModel
 ) {
     composable(route = productsRoute) {
-        ProductsScreen(productsViewModel)
+        ProductsRoute(productsViewModel)
     }
 }
+
+@Composable
+fun ProductsRoute(productsViewModel: ProductsViewModel) {
+    ProductsScreen(
+        productsViewModel.products.collectAsState().value,
+        productsViewModel.cart.collectAsState().value,
+        productsViewModel::getProducts,
+        productsViewModel::addToCart,
+        productsViewModel::removeFromCart
+    )
+}
+
+

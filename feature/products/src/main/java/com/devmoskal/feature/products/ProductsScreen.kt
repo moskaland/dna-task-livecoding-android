@@ -8,7 +8,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -19,16 +18,19 @@ import com.devmoskal.core.designsystem.theme.Black
 import com.devmoskal.core.designsystem.theme.DNATaskAndroidTheme
 import com.devmoskal.core.designsystem.theme.Gray
 import com.devmoskal.core.designsystem.theme.White
+import com.devmoskal.core.model.Product
 
 @Composable
-fun ProductsScreen(productsModel: ProductsModel) {
-
+fun ProductsScreen(
+    products: List<Product>?,
+    cart: Set<String>,
+    getProducts: () -> Unit,
+    addToCart: (String) -> Unit,
+    removeFromCart: (String) -> Unit
+) {
     LaunchedEffect(Unit) {
-        productsModel.getProducts()
+        getProducts()
     }
-
-    val products = productsModel.products.collectAsState().value
-    val cart = productsModel.cart.collectAsState().value
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -47,9 +49,9 @@ fun ProductsScreen(productsModel: ProductsModel) {
                             .border(1.dp, Black)
                             .clickable {
                                 if (cart.contains(product.productID)) {
-                                    productsModel.removeFromCart(product.productID)
+                                    removeFromCart(product.productID)
                                 } else {
-                                    productsModel.addToCart(product.productID)
+                                    addToCart(product.productID)
                                 }
                             }
                     ) {
@@ -86,6 +88,12 @@ fun ProductsScreen(productsModel: ProductsModel) {
 @Composable
 fun DefaultPreview() {
     DNATaskAndroidTheme {
-        ProductsScreen(productsModel = ProductsModel())
+        ProductsScreen(
+            products = emptyList(),
+            cart = emptySet(),
+            getProducts = {},
+            addToCart = {},
+            removeFromCart = {},
+        )
     }
 }

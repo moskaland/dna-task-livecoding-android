@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class ProductsModel: ViewModel() {
+class ProductsViewModel: ViewModel() {
     val purchaseApiClient: PurchaseApiClient = MockPurchaseApiClient()
 
     private var mutableCart: MutableStateFlow<Set<String>> = MutableStateFlow(setOf())

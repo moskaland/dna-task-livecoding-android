@@ -14,3 +14,5 @@ dependencyResolutionManagement {
 }
 rootProject.name = "DNATaskAndroid"
 include ':app'
+include ':feature:products'
+include ':core:designsystem'

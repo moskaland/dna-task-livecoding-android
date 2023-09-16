@@ -5,15 +5,16 @@ import com.devmoskal.core.network.model.PaymentRequest
 import com.devmoskal.core.network.model.PaymentResponse
 import com.devmoskal.core.network.model.PaymentStatus
 import kotlinx.coroutines.delay
+import javax.inject.Inject
 
-class MockPaymentApiClient : PaymentApiClient {
+internal class MockPaymentApiClient @Inject constructor() : PaymentApiClient {
     /**
      * Call this method to execute payment on the account connected with provided card token
      */
     override suspend fun pay(paymentRequest: PaymentRequest): PaymentResponse {
         delay(2500)
 
-        return if (paymentRequest.currency == "EUR" && paymentRequest.amount >= 20.00 ) {
+        return if (paymentRequest.currency == "EUR" && paymentRequest.amount >= 20.00) {
             PaymentResponse(paymentRequest.transactionID, PaymentStatus.SUCCESS)
         } else {
             PaymentResponse(paymentRequest.transactionID, PaymentStatus.FAILED)

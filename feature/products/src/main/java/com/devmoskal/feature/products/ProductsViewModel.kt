@@ -10,8 +10,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ProductsViewModel @Inject constructor() : ViewModel() {
-    val purchaseApiClient: PurchaseApiClient = MockPurchaseApiClient()
+class ProductsViewModel @Inject constructor(
+    private val purchaseApiClient: PurchaseApiClient
+) : ViewModel() {
 
     private var mutableCart: MutableStateFlow<Set<String>> = MutableStateFlow(setOf())
     var cart: StateFlow<Set<String>> = mutableCart

@@ -24,11 +24,12 @@ import com.devmoskal.core.designsystem.theme.DNATaskAndroidTheme
 import com.devmoskal.core.designsystem.theme.Gray
 import com.devmoskal.core.designsystem.theme.White
 import com.devmoskal.core.model.Product
+import com.devmoskal.core.model.Quantity
 
 @Composable
 fun ProductsScreen(
     products: List<Product>?,
-    cart: Set<String>,
+    cart: Map<String, Quantity>,
     getProducts: () -> Unit,
     addToCart: (String) -> Unit,
     removeFromCart: (String) -> Unit,
@@ -99,7 +100,7 @@ fun DefaultPreview() {
     DNATaskAndroidTheme {
         ProductsScreen(
             products = emptyList(),
-            cart = emptySet(),
+            cart = emptyMap(),
             getProducts = {},
             addToCart = {},
             removeFromCart = {},

@@ -2,6 +2,8 @@ package com.devmoskal.feature.products
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.devmoskal.core.data.CartRepository
+import com.devmoskal.core.model.Quantity
 import com.devmoskal.core.network.PurchaseApiClient
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,11 +13,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProductsViewModel @Inject constructor(
-    private val purchaseApiClient: PurchaseApiClient
+    private val purchaseApiClient: PurchaseApiClient, // TODO Vm should not use api layer
+    private val cartRepository: CartRepository,
 ) : ViewModel() {
-
-    private var mutableCart: MutableStateFlow<Set<String>> = MutableStateFlow(setOf())
-    var cart: StateFlow<Set<String>> = mutableCart
+    var cart: StateFlow<Map<String, Quantity>> = cartRepository.cart
 
     private var mutableProducts = MutableStateFlow<List<com.devmoskal.core.model.Product>?>(null)
     var products: StateFlow<List<com.devmoskal.core.model.Product>?> = mutableProducts
@@ -28,16 +29,14 @@ class ProductsViewModel @Inject constructor(
 
 
     fun addToCart(productID: String) {
-        val newSet = mutableCart.value.toMutableSet()
-        newSet.add(productID)
-        mutableCart.value = newSet.toSet()
+        viewModelScope.launch {
+            cartRepository.addToCart(productID)
+        }
     }
 
     fun removeFromCart(productID: String) {
-        val newSet = mutableCart.value.toMutableSet()
-        if (newSet.contains(productID)) {
-            newSet.remove(productID)
+        viewModelScope.launch {
+            cartRepository.removeFromCart(productID)
         }
-        mutableCart.value = newSet.toSet()
     }
 }

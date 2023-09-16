@@ -5,6 +5,9 @@ buildscript {
         nav_version = '2.6.0'
         hilt_version = '2.48'
         hilt_navi_version = '1.0.0'
+        assertj_version = '3.24.2'
+        coroutine_test_version = '1.7.1'
+        turbine_version = '1.0.0'
     }
 
     dependencies {

@@ -1,13 +1,13 @@
 package com.devmoskal.core.network.mock
 
 import com.devmoskal.core.model.Product
+import com.devmoskal.core.model.TransactionStatus
 import com.devmoskal.core.network.PurchaseApiClient
 import com.devmoskal.core.network.model.PurchaseCancelRequest
 import com.devmoskal.core.network.model.PurchaseConfirmRequest
 import com.devmoskal.core.network.model.PurchaseRequest
 import com.devmoskal.core.network.model.PurchaseResponse
 import com.devmoskal.core.network.model.PurchaseStatusResponse
-import com.devmoskal.core.network.model.TransactionStatus
 import kotlinx.coroutines.delay
 import java.util.UUID
 import javax.inject.Inject

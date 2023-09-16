@@ -1,16 +1,15 @@
 package com.devmoskal.core.network
 
+import com.devmoskal.core.model.TransactionStatus
 import com.devmoskal.core.network.mock.MockPaymentApiClient
 import com.devmoskal.core.network.mock.MockPurchaseApiClient
 import com.devmoskal.core.network.model.PaymentRequest
 import com.devmoskal.core.network.model.PaymentStatus
 import com.devmoskal.core.network.model.PurchaseConfirmRequest
 import com.devmoskal.core.network.model.PurchaseRequest
-import com.devmoskal.core.network.model.TransactionStatus
 import kotlinx.coroutines.runBlocking
+import org.junit.Assert.assertEquals
 import org.junit.Test
-
-import org.junit.Assert.*
 
 class MockPaymentAPITests {
     private val paymentAPI = MockPaymentApiClient()

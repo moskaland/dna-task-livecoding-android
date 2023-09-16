@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace 'com.devmoskal.core.data'
+    namespace 'com.devmoskal.core.datasource'
     compileSdk 33
 
     defaultConfig {
@@ -32,10 +32,9 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:network"))
-    implementation(project(":core:datasource"))
-    implementation(project(":core:common"))
     implementation(project(":core:model"))
+    implementation(project(":core:network"))
+    implementation(project(":core:common"))
 
 
     implementation 'androidx.core:core-ktx:1.9.0'

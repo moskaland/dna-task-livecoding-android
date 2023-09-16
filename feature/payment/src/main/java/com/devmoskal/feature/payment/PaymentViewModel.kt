@@ -23,7 +23,7 @@ class PaymentViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             val order = cartRepository.cart.value
-            purchaseRepository.initiatePurchaseTransaction(order)
+            purchaseRepository.initiateTransaction(order)
                 .onSuccess {
                     _paymentUiState.value = PaymentUiState.PurchaseInfo(
                         order.values.sum()

@@ -1,6 +1,6 @@
 <resources>
     <plurals name="payment_order_description">
-        <item quantity="one">Pay for %d item</item>
-        <item quantity="other">Pay for %d items</item>
+        <item quantity="one">Pay for %1$d item</item>
+        <item quantity="other">Pay for %1$d items</item>
     </plurals>
 </resources>

@@ -1,10 +1,10 @@
-package com.devmoskal.core.data
+package com.devmoskal.core.datasource
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
-internal class CartInMemoryRepository @Inject constructor() : CartRepository {
+internal class CartInMemoryDataSource @Inject constructor() : CartDataSource {
     private var _cart: MutableStateFlow<Map<String, Long>> = MutableStateFlow(mapOf())
     override var cart: StateFlow<Map<String, Long>> = _cart
 

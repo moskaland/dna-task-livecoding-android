@@ -1,15 +1,15 @@
-package com.devmoskal.core.data
+package com.devmoskal.core.datasource
 
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
-class CartInMemoryRepositoryTest {
+class CartInMemoryDataSourceTest {
 
     @Test
     fun `when adding an item to cart, it should be in the cart`() = runTest {
         // Given
-        val repo = CartInMemoryRepository()
+        val repo = CartInMemoryDataSource()
 
         // When
         repo.addToCart("item1", 1L)
@@ -22,7 +22,7 @@ class CartInMemoryRepositoryTest {
     @Test
     fun `when removing an item from cart, it should not be in the cart`() = runTest {
         // Given
-        val repo = CartInMemoryRepository()
+        val repo = CartInMemoryDataSource()
         repo.addToCart("item1", 1L)
 
         // When
@@ -36,7 +36,7 @@ class CartInMemoryRepositoryTest {
     @Test
     fun `when adding multiple items to cart, they should be in the cart`() = runTest {
         // Given
-        val repo = CartInMemoryRepository()
+        val repo = CartInMemoryDataSource()
 
         // When
         repo.addToCart("item1", 1L)
@@ -53,7 +53,7 @@ class CartInMemoryRepositoryTest {
     @Test
     fun `when adding the same item multiple times, its count should increase`() = runTest {
         // Given
-        val repo = CartInMemoryRepository()
+        val repo = CartInMemoryDataSource()
 
         // When
         repo.addToCart("item1", 1L)
@@ -67,7 +67,7 @@ class CartInMemoryRepositoryTest {
     @Test
     fun `when cart is empty, it should return an empty map`() = runTest {
         // Given
-        val repo = CartInMemoryRepository()
+        val repo = CartInMemoryDataSource()
 
         // When
         val cartItems = repo.cart.value
@@ -79,7 +79,7 @@ class CartInMemoryRepositoryTest {
     @Test
     fun `when removing an item that doesn't exist, cart should remain unchanged`() = runTest {
         // Given
-        val repo = CartInMemoryRepository()
+        val repo = CartInMemoryDataSource()
         repo.addToCart("item1", 1L)
 
         // When
@@ -93,7 +93,7 @@ class CartInMemoryRepositoryTest {
     @Test
     fun `when removing an item multiple times, its count should decrease`() = runTest {
         // Given
-        val repo = CartInMemoryRepository()
+        val repo = CartInMemoryDataSource()
         repo.addToCart("item1", 1L)
         repo.addToCart("item1", 1L)
 
@@ -109,7 +109,7 @@ class CartInMemoryRepositoryTest {
     @Test
     fun `when adding an item with a quantity greater than 1, the quantity should be updated`() = runTest {
         // Given
-        val repo = CartInMemoryRepository()
+        val repo = CartInMemoryDataSource()
 
         // When
         repo.addToCart("item1", 5L)
@@ -122,7 +122,7 @@ class CartInMemoryRepositoryTest {
     @Test
     fun `when removing a quantity greater than the current quantity, the item should be removed`() = runTest {
         // Given
-        val repo = CartInMemoryRepository()
+        val repo = CartInMemoryDataSource()
         repo.addToCart("item1", 2L)
 
         // When
@@ -136,7 +136,7 @@ class CartInMemoryRepositoryTest {
     @Test
     fun `when removing a quantity of 0, the cart should remain unchanged`() = runTest {
         // Given
-        val repo = CartInMemoryRepository()
+        val repo = CartInMemoryDataSource()
         repo.addToCart("item1", 1L)
 
         // When
@@ -149,7 +149,7 @@ class CartInMemoryRepositoryTest {
 
     @Test
     fun `when performing multiple operation, the cart should reflect all operations`() = runTest {
-        val repo = CartInMemoryRepository()
+        val repo = CartInMemoryDataSource()
         assertThat(repo.cart.value).isEmpty()
 
         repo.addToCart("item1", 2L)

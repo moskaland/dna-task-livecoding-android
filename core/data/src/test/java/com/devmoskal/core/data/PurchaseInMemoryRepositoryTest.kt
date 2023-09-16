@@ -31,23 +31,24 @@ class PurchaseInMemoryRepositoryTest {
     }
 
     @Test
-    fun `when initiating purchase while another transaction is in progress should fail`() = runTest(dispatcher) {
-        // Given
-        val purchaseResponse = PurchaseResponse(mockk(), "transactionID", TransactionStatus.INITIATED)
-        coEvery { purchaseApiClient.initiatePurchaseTransaction(any()) } returns purchaseResponse
+    fun `when initiating purchase while another transaction is in progress than request should fail`() =
+        runTest(dispatcher) {
+            // Given
+            val purchaseResponse = PurchaseResponse(mockk(), "transactionID", TransactionStatus.INITIATED)
+            coEvery { purchaseApiClient.initiatePurchaseTransaction(any()) } returns purchaseResponse
 
-        // When
-        purchaseInMemoryRepository.initiatePurchaseTransaction(mockk())
-        val result = purchaseInMemoryRepository.initiatePurchaseTransaction(mockk())
+            // When
+            purchaseInMemoryRepository.initiatePurchaseTransaction(mockk())
+            val result = purchaseInMemoryRepository.initiatePurchaseTransaction(mockk())
 
 
-        // Then
+            // Then
         assertThat(result).isInstanceOf(Result.Failure::class.java)
         assertThat((result as Result.Failure).error).isEqualTo(PurchaseErrors.AnotherTransactionInProgressError)
     }
 
     @Test
-    fun `when initiating purchase with API failure should return API error`() = runTest(dispatcher) {
+    fun `when initiating purchase with API failure than should return general api error`() = runTest(dispatcher) {
         // Given
         val failedPurchaseResponse = PurchaseResponse(mockk(), "transactionID", TransactionStatus.FAILED)
         coEvery { purchaseApiClient.initiatePurchaseTransaction(any()) } returns failedPurchaseResponse
@@ -57,6 +58,6 @@ class PurchaseInMemoryRepositoryTest {
 
         // Then
         assertThat(result).isInstanceOf(Result.Failure::class.java)
-        assertThat((result as Result.Failure).error).isEqualTo(PurchaseErrors.AnotherTransactionInProgressError)
+        assertThat((result as Result.Failure).error).isEqualTo(PurchaseErrors.GeneralError)
     }
 }

@@ -3,8 +3,8 @@ package com.devmoskal.feature.products
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devmoskal.core.data.CartRepository
+import com.devmoskal.core.data.ProductRepository
 import com.devmoskal.core.model.Quantity
-import com.devmoskal.core.network.PurchaseApiClient
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProductsViewModel @Inject constructor(
-    private val purchaseApiClient: PurchaseApiClient, // TODO Vm should not use api layer
+    private val productRepository: ProductRepository,
     private val cartRepository: CartRepository,
 ) : ViewModel() {
     var cart: StateFlow<Map<String, Quantity>> = cartRepository.cart
@@ -23,7 +23,7 @@ class ProductsViewModel @Inject constructor(
 
     fun getProducts() {
         viewModelScope.launch {
-            mutableProducts.value = purchaseApiClient.getProducts()
+            mutableProducts.value = productRepository.getProducts()
         }
     }
 

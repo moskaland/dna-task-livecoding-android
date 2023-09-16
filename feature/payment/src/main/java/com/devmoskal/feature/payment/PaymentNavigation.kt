@@ -1,7 +1,9 @@
 package com.devmoskal.feature.payment
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -22,7 +24,8 @@ fun NavGraphBuilder.paymentScreen() {
 
 @Composable
 fun PaymentRoute(paymentViewModel: PaymentViewModel = hiltViewModel()) {
-    PaymentScreen(paymentViewModel.test)
+    val uiState by paymentViewModel.paymentUiState.collectAsStateWithLifecycle()
+    PaymentScreen(uiState)
 }
 
 

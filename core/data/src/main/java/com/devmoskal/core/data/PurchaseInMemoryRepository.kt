@@ -27,12 +27,12 @@ internal class PurchaseInMemoryRepository @Inject constructor(
                 transactionData = response.toTransactionData()
                 Result.Success(Unit)
             } else {
-                Result.Failure(PurchaseErrors.AnotherTransactionInProgressError)
+                Result.Failure(PurchaseErrors.GeneralError)
             }
         }
     }
 
-    fun PurchaseResponse.toTransactionData() = TransactionData(transactionID, transactionStatus, order)
+    private fun PurchaseResponse.toTransactionData() = TransactionData(transactionID, transactionStatus, order)
 
     data class TransactionData(
         val transactionID: String,

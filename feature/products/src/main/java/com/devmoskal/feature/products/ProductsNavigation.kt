@@ -9,14 +9,14 @@ import androidx.navigation.compose.composable
 
 const val productsRoute = "products_route"
 
-fun NavGraphBuilder.productsScreen() {
+fun NavGraphBuilder.productsScreen(onPayClick: () -> Unit) {
     composable(route = productsRoute) {
-        ProductsRoute()
+        ProductsRoute(onPayClick)
     }
 }
 
 @Composable
-fun ProductsRoute(productsViewModel: ProductsViewModel = hiltViewModel()) {
+fun ProductsRoute(onPayClick: () -> Unit, productsViewModel: ProductsViewModel = hiltViewModel()) {
     val products by productsViewModel.products.collectAsStateWithLifecycle()
     val cart by productsViewModel.cart.collectAsStateWithLifecycle()
 
@@ -25,7 +25,8 @@ fun ProductsRoute(productsViewModel: ProductsViewModel = hiltViewModel()) {
         cart,
         productsViewModel::getProducts,
         productsViewModel::addToCart,
-        productsViewModel::removeFromCart
+        productsViewModel::removeFromCart,
+        onPayClick,
     )
 }
 

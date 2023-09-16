@@ -72,7 +72,7 @@ internal class MockPurchaseApiClient @Inject constructor() : PurchaseApiClient {
                 return PurchaseStatusResponse(purchaseRequest.transactionID, TransactionStatus.FAILED)
             }
 
-            return PurchaseStatusResponse(purchaseRequest.transactionID, TransactionStatus.INITIATED)
+            return PurchaseStatusResponse(purchaseRequest.transactionID, TransactionStatus.CONFIRMED)
         } catch (e: Exception) {
             return PurchaseStatusResponse(purchaseRequest.transactionID, TransactionStatus.FAILED)
         }

@@ -2,22 +2,21 @@ package com.devmoskal.feature.products
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 
 const val productsRoute = "products_route"
 
-fun NavGraphBuilder.productsScreen(
-    productsViewModel: ProductsViewModel
-) {
+fun NavGraphBuilder.productsScreen() {
     composable(route = productsRoute) {
-        ProductsRoute(productsViewModel)
+        ProductsRoute()
     }
 }
 
 @Composable
-fun ProductsRoute(productsViewModel: ProductsViewModel) {
+fun ProductsRoute(productsViewModel: ProductsViewModel = hiltViewModel()) {
     val products by productsViewModel.products.collectAsStateWithLifecycle()
     val cart by productsViewModel.cart.collectAsStateWithLifecycle()
 

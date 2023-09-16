@@ -9,9 +9,10 @@ import com.devmoskal.core.network.model.PurchaseResponse
 import com.devmoskal.core.network.model.PurchaseStatusResponse
 import com.devmoskal.core.network.model.TransactionStatus
 import kotlinx.coroutines.delay
-import java.util.*
+import java.util.UUID
+import javax.inject.Inject
 
-class MockPurchaseApiClient : PurchaseApiClient {
+internal class MockPurchaseApiClient @Inject constructor() : PurchaseApiClient {
     companion object {
         val productList = listOf(
             Product("12345", "Big soda", 123, 2.99, "EUR", 0.22),

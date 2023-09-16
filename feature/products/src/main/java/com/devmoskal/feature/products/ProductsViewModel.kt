@@ -3,14 +3,16 @@ package com.devmoskal.feature.products
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devmoskal.core.network.PurchaseApiClient
-import com.devmoskal.core.network.mock.MockPurchaseApiClient
-
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ProductsViewModel: ViewModel() {
-    val purchaseApiClient: PurchaseApiClient = MockPurchaseApiClient()
+@HiltViewModel
+class ProductsViewModel @Inject constructor(
+    private val purchaseApiClient: PurchaseApiClient
+) : ViewModel() {
 
     private var mutableCart: MutableStateFlow<Set<String>> = MutableStateFlow(setOf())
     var cart: StateFlow<Set<String>> = mutableCart

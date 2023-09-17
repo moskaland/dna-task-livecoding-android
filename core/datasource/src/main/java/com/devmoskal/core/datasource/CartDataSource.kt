@@ -1,0 +1,10 @@
+package com.devmoskal.core.datasource
+
+import com.devmoskal.core.model.Quantity
+import kotlinx.coroutines.flow.StateFlow
+
+interface CartDataSource {
+    val cart: StateFlow<Map<String, Quantity>>
+    fun addToCart(id: String, quantity: Long = 1)
+    fun removeFromCart(id: String, quantity: Long = 1)
+}

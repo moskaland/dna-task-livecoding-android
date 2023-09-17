@@ -8,13 +8,17 @@ package com.devmoskal.core.model
  * unitValueCurrency - currency name
  * tax - tax to be added to the net value
  */
-data class Product(val productID: String,
-                   val name: String,
-                   val maxAmount: Long,
-                   val unitNetValue: Double,
-                   val unitValueCurrency: String,
-                   val tax: Double) {
+data class Product(
+    val productID: String,
+    val name: String,
+    val maxAmount: Long,
+    val unitNetValue: Double,
+    val unitValueCurrency: String,
+    val tax: Double
+) {
     override fun toString(): String {
-        return String.format("%s [ %.2f %s ]", name, unitNetValue * (1.0+ tax), unitValueCurrency)
+        return String.format("%s [ %.2f %s ]", name, unitNetValue * (1.0 + tax), unitValueCurrency)
     }
 }
+
+typealias Quantity = Long

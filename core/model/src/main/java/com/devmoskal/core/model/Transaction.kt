@@ -4,7 +4,8 @@ data class Transaction(
     val transactionID: String,
     val status: TransactionStatus,
     val order: Map<String, Long>,
-    val isPaid: Boolean = false
+    val currency: String = "EUR", // fixed in MVP
+    val isPaid: Boolean = false,
 )
 
 enum class TransactionStatus {

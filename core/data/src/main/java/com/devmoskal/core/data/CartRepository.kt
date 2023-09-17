@@ -7,4 +7,5 @@ interface CartRepository {
     val cart: StateFlow<Map<String, Quantity>>
     fun addToCart(id: String, quantity: Long = 1)
     fun removeFromCart(id: String, quantity: Long = 1)
+
 }

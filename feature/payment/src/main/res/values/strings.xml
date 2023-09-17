@@ -1,8 +1,9 @@
 <resources>
 
     <string name="payment_tap_card">Press to pay with a card</string>
-    <string name="payment_processing_payment">Processing payment…</string>
-    <string name="payment_processing_card">Processing card…</string>
+    <string name="payment_processing">Processing…</string>
     <string name="payment_card_error">Unable to process the card. Please try again or contact your card provider.</string>
     <string name="payment_payment_error">Unable to process your payment. Please try again</string>
+    <string name="payment_general_error">General system error. Please try again</string>
+    <string name="payment_successful">payment successful</string>
 </resources>

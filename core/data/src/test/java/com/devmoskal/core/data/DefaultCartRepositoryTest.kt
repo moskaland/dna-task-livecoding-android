@@ -7,15 +7,15 @@ import org.junit.Before
 import org.junit.Test
 
 // a bit dummy set of test due to simplicity of Repository
-class CartOfflineRepositoryTest {
+class DefaultCartRepositoryTest {
 
     private lateinit var cartDataSource: CartDataSource
-    private lateinit var cartOfflineRepository: CartOfflineRepository
+    private lateinit var defaultCartRepository: DefaultCartRepository
 
     @Before
     fun setUp() {
         cartDataSource = mockk(relaxed = true)
-        cartOfflineRepository = CartOfflineRepository(cartDataSource)
+        defaultCartRepository = DefaultCartRepository(cartDataSource)
     }
 
     @Test
@@ -25,7 +25,7 @@ class CartOfflineRepositoryTest {
         val quantity: Long = 2
 
         // When
-        cartOfflineRepository.addToCart(id, quantity)
+        defaultCartRepository.addToCart(id, quantity)
 
         // Then
         verify { cartDataSource.addToCart(id, quantity) }
@@ -38,7 +38,7 @@ class CartOfflineRepositoryTest {
         val quantity: Long = 0
 
         // When
-        cartOfflineRepository.removeFromCart(id, quantity)
+        defaultCartRepository.removeFromCart(id, quantity)
 
         // Then
         verify { cartDataSource.removeFromCart(id, quantity) }
@@ -48,6 +48,6 @@ class CartOfflineRepositoryTest {
     @Test
     fun `when using cart then data should comes from data source`() {
         // Then
-        assertThat(cartOfflineRepository.cart).isEqualTo(cartDataSource.cart)
+        assertThat(defaultCartRepository.cart).isEqualTo(cartDataSource.cart)
     }
 }

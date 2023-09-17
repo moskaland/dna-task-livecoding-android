@@ -1,14 +1,16 @@
 package com.devmoskal.core.data
 
 import com.devmoskal.core.datasource.CartDataSource
+import com.devmoskal.core.model.Quantity
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
-internal class CartOfflineRepository @Inject constructor(
-    private val cartDataSource: CartDataSource
-) : CartRepository {
+internal class DefaultCartRepository @Inject constructor(
+    private val cartDataSource: CartDataSource,
 
-    override var cart: StateFlow<Map<String, Long>> = cartDataSource.cart
+    ) : CartRepository {
+
+    override var cart: StateFlow<Map<String, Quantity>> = cartDataSource.cart
 
     override fun addToCart(id: String, quantity: Long) = cartDataSource.addToCart(id, quantity)
 

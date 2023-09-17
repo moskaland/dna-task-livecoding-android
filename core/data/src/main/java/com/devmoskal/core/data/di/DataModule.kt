@@ -1,7 +1,9 @@
 package com.devmoskal.core.data.di
 
-import com.devmoskal.core.data.CartOfflineRepository
 import com.devmoskal.core.data.CartRepository
+import com.devmoskal.core.data.DefaultCartRepository
+import com.devmoskal.core.data.PaymentRepository
+import com.devmoskal.core.data.PaymentWithCardRepository
 import com.devmoskal.core.data.ProductNetworkRepository
 import com.devmoskal.core.data.ProductRepository
 import com.devmoskal.core.data.PurchaseInMemoryRepository
@@ -24,13 +26,16 @@ object DataModule
 @DisableInstallInCheck
 internal interface InternalRepositoryModule {
     @Binds
-    fun bindsCartRepository(cartOfflineRepository: CartOfflineRepository): CartRepository
+    fun bindsCartRepository(defaultCartRepository: DefaultCartRepository): CartRepository
 
     @Binds
     fun bindsProductRepository(productNetworkRepository: ProductNetworkRepository): ProductRepository
 
     @Binds
     fun bindsPurchaseRepository(purchaseInMemoryRepository: PurchaseInMemoryRepository): PurchaseRepository
+
+    @Binds
+    fun bindsPaymentRepository(paymentWithCardRepository: PaymentWithCardRepository): PaymentRepository
 }
 
 @Module

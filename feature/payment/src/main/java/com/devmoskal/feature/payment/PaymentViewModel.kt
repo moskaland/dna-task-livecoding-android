@@ -2,8 +2,9 @@ package com.devmoskal.feature.payment
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.devmoskal.core.data.PaymentRepository
+import com.devmoskal.core.data.model.PaymentError
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,22 +13,37 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PaymentViewModel @Inject constructor(
+    private val paymentRepository: PaymentRepository
 ) : ViewModel() {
     private val _paymentUiState = MutableStateFlow<PaymentUiState>(PaymentUiState.Idle)
     val paymentUiState: StateFlow<PaymentUiState> = _paymentUiState.asStateFlow()
 
     fun pay() {
-        _paymentUiState.value = PaymentUiState.Processing(ProcessingState.CARD)
+        _paymentUiState.value = PaymentUiState.Processing
         viewModelScope.launch {
-            delay(2000)
-            _paymentUiState.value = PaymentUiState.Processing(ProcessingState.PAYMENT)
-            delay(2000)
-            _paymentUiState.value = PaymentUiState.Complete
+            paymentRepository.pay()
+                .onSuccess {
+                    _paymentUiState.value = PaymentUiState.Complete
+                }
+                .onFailure(::handlePaymentError)
         }
     }
 
+    private fun handlePaymentError(paymentError: PaymentError) {
+        _paymentUiState.value = PaymentUiState.Error(
+            when (paymentError) {
+                PaymentError.InternalPaymentError -> PaymentUiError.PAYMENT_ERROR
+                PaymentError.GeneralCardReaderError,
+                PaymentError.KnownCardReaderError -> PaymentUiError.CARD_ERROR
+
+                PaymentError.Canceled,
+                PaymentError.TransactionNotFound -> PaymentUiError.GENERAL_ERROR
+            }
+        )
+    }
+
     fun onErrorAcknowledge() {
-        // here can goes max retry logic etc
+        // here can goes max retry logic etc.
         _paymentUiState.value = PaymentUiState.Idle
     }
 }
@@ -35,16 +51,12 @@ class PaymentViewModel @Inject constructor(
 sealed interface PaymentUiState {
     object Idle : PaymentUiState
     object Complete : PaymentUiState
-    data class Processing(val state: ProcessingState) : PaymentUiState
-    data class Error(val type: PaymentErrors) : PaymentUiState
+    object Processing : PaymentUiState
+    data class Error(val type: PaymentUiError) : PaymentUiState
 }
 
-enum class ProcessingState {
-    CARD,
-    PAYMENT,
-}
-
-enum class PaymentErrors {
+enum class PaymentUiError {
     CARD_ERROR,
     PAYMENT_ERROR,
+    GENERAL_ERROR,
 }

@@ -2,12 +2,14 @@ package com.devmoskal.core.data
 
 import android.util.Log
 import com.devmoskal.core.common.Result
+import com.devmoskal.core.data.model.PurchaseErrors
 import com.devmoskal.core.datasource.TransactionDataSource
 import com.devmoskal.core.model.Transaction
 import com.devmoskal.core.model.TransactionStatus
 import com.devmoskal.core.network.PurchaseApiClient
 import com.devmoskal.core.network.model.PurchaseResponse
 import com.devmoskal.core.network.model.PurchaseStatusResponse
+import com.devmoskal.core.service.cardReader.CardReaderService
 import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -15,7 +17,6 @@ import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkStatic
-import io.mockk.verify
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
@@ -28,9 +29,10 @@ import org.junit.Test
 class PurchaseInMemoryRepositoryTest {
     private val purchaseApiClient: PurchaseApiClient = mockk()
     private val transactionDataSource: TransactionDataSource = mockk()
+    private val cardReaderService: CardReaderService = mockk()
     private val dispatcher: CoroutineDispatcher = StandardTestDispatcher()
     private val purchaseInMemoryRepository =
-        PurchaseInMemoryRepository(purchaseApiClient, transactionDataSource, Mutex(), dispatcher)
+        PurchaseInMemoryRepository(purchaseApiClient, transactionDataSource, cardReaderService, Mutex(), dispatcher)
 
     @Test
     fun `when initiating purchase with no ongoing transaction, start transaction and return success`() =
@@ -45,7 +47,7 @@ class PurchaseInMemoryRepositoryTest {
             val result = purchaseInMemoryRepository.initiateTransaction(mockk())
 
             // Then
-            verify { transactionDataSource.setTransaction(any()) }
+            coVerify { transactionDataSource.setTransaction(any()) }
         assertThat(result).isInstanceOf(Result.Success::class.java)
     }
 

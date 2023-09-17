@@ -1,5 +1,6 @@
 package com.devmoskal.feature.payment
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -47,12 +49,17 @@ fun PaymentScreen(
             onClick = onPayClick
         )
 
-        is PaymentUiState.Processing -> ProcessingIndicator(uiState.state)
-        is PaymentUiState.Complete -> navigateUp()
+        is PaymentUiState.Processing -> ProcessingIndicator()
+        is PaymentUiState.Complete -> {
+            Toast.makeText(LocalContext.current, stringResource(R.string.payment_successful), Toast.LENGTH_SHORT).show()
+            navigateUp()
+        }
+
         is PaymentUiState.Error -> ErrorDialog(
             message = when (uiState.type) {
-                PaymentErrors.CARD_ERROR -> R.string.payment_card_error
-                PaymentErrors.PAYMENT_ERROR -> R.string.payment_payment_error
+                PaymentUiError.CARD_ERROR -> R.string.payment_card_error
+                PaymentUiError.PAYMENT_ERROR -> R.string.payment_payment_error
+                PaymentUiError.GENERAL_ERROR -> R.string.payment_general_error
             },
             closeAction = onErrorAcknowledge
         )
@@ -60,7 +67,7 @@ fun PaymentScreen(
 }
 
 @Composable
-fun ProcessingIndicator(state: ProcessingState) {
+fun ProcessingIndicator() {
     Column(
         Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.Center,
@@ -74,14 +81,7 @@ fun ProcessingIndicator(state: ProcessingState) {
             color = MainText,
             backgroundColor = White
         )
-        Text(
-            text = stringResource(
-                when (state) {
-                    ProcessingState.CARD -> R.string.payment_processing_card
-                    ProcessingState.PAYMENT -> R.string.payment_processing_payment
-                }
-            ), color = Black
-        )
+        Text(text = stringResource(R.string.payment_processing), color = Black)
     }
 }
 

@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface TransactionDataSource {
     val transaction: StateFlow<Transaction?>
-    fun setTransaction(transaction: Transaction)
-    fun clear()
+    suspend fun setTransaction(transaction: Transaction)
+    suspend fun markAsPaid()
+    suspend fun clear()
 }

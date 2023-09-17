@@ -36,6 +36,24 @@ class PaymentViewModel @Inject constructor(
     /**
      * Cancel any ongoing transaction
      */
+    fun pay() {
+        _paymentUiState.value = PaymentUiState.Cleanup.Processing
+        viewModelScope.launch {
+            purchaseRepository.cancelOngoingTransaction()
+                .onSuccess {
+                    _paymentUiState.value = PaymentUiState.Cleanup.Finished
+                }
+                .onFailure {
+                    // error during cancellation or during error handling itself
+                    // I assume it is out of scope of interview task, yet it's important case
+                    _paymentUiState.value = PaymentUiState.Cleanup.Error
+                }
+        }
+    }
+
+    /**
+     * Cancel any ongoing transaction
+     */
     fun cleanup() {
         _paymentUiState.value = PaymentUiState.Cleanup.Processing
         viewModelScope.launch {

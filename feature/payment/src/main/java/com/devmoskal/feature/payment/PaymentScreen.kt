@@ -34,11 +34,13 @@ import com.devmoskal.core.designsystem.theme.DNATaskAndroidTheme
 import com.devmoskal.core.designsystem.theme.Gray
 import com.devmoskal.core.designsystem.theme.MainText
 import com.devmoskal.core.designsystem.theme.White
+import com.devmoskal.core.designsystem.theme.component.CTAButton
 
 @Composable
 fun PaymentScreen(
     uiState: PaymentUiState,
     onBackPressed: () -> Unit,
+    onPayClick: () -> Unit,
     navigateUp: () -> Boolean,
 ) {
     BackHandler {
@@ -46,7 +48,7 @@ fun PaymentScreen(
             onBackPressed()
         }
     }
-    PaymentContent(uiState)
+    PaymentContent(uiState, onPayClick)
 
     when (uiState) {
         is PaymentUiState.Cleanup.Finished -> navigateUp()
@@ -62,7 +64,7 @@ fun PaymentScreen(
 }
 
 @Composable
-internal fun PaymentContent(uiState: PaymentUiState) {
+internal fun PaymentContent(uiState: PaymentUiState, onPayClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -71,6 +73,9 @@ internal fun PaymentContent(uiState: PaymentUiState) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         PaymentHeader(uiState)
+        CTAButton(textIdRes = R.string.payment_finalize) {
+            onPayClick()
+        }
     }
 }
 
@@ -159,6 +164,6 @@ fun DialogPreview() {
 @Composable
 fun DefaultPreview() {
     DNATaskAndroidTheme {
-        PaymentScreen(PaymentUiState.PurchaseInfo(5L), {}, { true })
+        PaymentScreen(PaymentUiState.PurchaseInfo(5L), {}, {}, { true })
     }
 }

@@ -25,7 +25,7 @@ fun NavGraphBuilder.paymentScreen(navigateUp: () -> Boolean) {
 @Composable
 fun PaymentRoute(navigateUp: () -> Boolean, paymentViewModel: PaymentViewModel = hiltViewModel()) {
     val uiState by paymentViewModel.paymentUiState.collectAsStateWithLifecycle()
-    PaymentScreen(uiState, paymentViewModel::cleanup, navigateUp)
+    PaymentScreen(uiState, paymentViewModel::cleanup, paymentViewModel::pay, navigateUp)
 }
 
 

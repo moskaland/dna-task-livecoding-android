@@ -4,6 +4,7 @@
     <string name="payment_go_back">Navigate back</string>
     <string name="payment_cancellation_error">Unable to cancel an ongoing transaction!</string>
     <string name="payment_canceling_order">Cancelling order…</string>
+    <string name="payment_finalize">Order and pay</string>
     <plurals name="payment_order_description">
         <item quantity="one">Pay for %1$d item</item>
         <item quantity="other">Pay for %1$d items</item>

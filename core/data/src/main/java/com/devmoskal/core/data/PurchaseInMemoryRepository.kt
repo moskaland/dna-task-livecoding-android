@@ -10,6 +10,7 @@ import com.devmoskal.core.network.PurchaseApiClient
 import com.devmoskal.core.network.model.PurchaseCancelRequest
 import com.devmoskal.core.network.model.PurchaseRequest
 import com.devmoskal.core.network.model.PurchaseResponse
+import com.devmoskal.core.service.cardReader.CardReaderService
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -20,6 +21,7 @@ import javax.inject.Named
 internal class PurchaseInMemoryRepository @Inject constructor(
     private val purchaseApiClient: PurchaseApiClient,
     private val transactionDataSource: TransactionDataSource,
+    private val cardReaderService: CardReaderService,
     @Named("TransactionMutex") private val mutex: Mutex,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : PurchaseRepository {
@@ -32,6 +34,13 @@ internal class PurchaseInMemoryRepository @Inject constructor(
             }
             return performInitialApiCall(order)
         }
+    }
+
+    // TODO properly handle card payment; move it to Payment Repository, and most likely separate screen.
+    // Also This method is doing waay to much. Split it if times allows
+    override suspend fun finalizeTransaction(): Result<Unit, PurchaseErrors> {
+        cardReaderService.readCard()
+        TODO()
     }
 
     override suspend fun cancelOngoingTransaction(): Result<Unit, PurchaseErrors> {

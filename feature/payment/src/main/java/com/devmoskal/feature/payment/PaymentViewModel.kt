@@ -2,8 +2,8 @@ package com.devmoskal.feature.payment
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.devmoskal.core.data.CartRepository
-import com.devmoskal.core.data.PurchaseRepository
+import com.devmoskal.core.data.PaymentRepository
+import com.devmoskal.core.data.model.PaymentError
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,53 +13,50 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PaymentViewModel @Inject constructor(
-    private val cartRepository: CartRepository,
-    private val purchaseRepository: PurchaseRepository,
+    private val paymentRepository: PaymentRepository
 ) : ViewModel() {
-
-    private val _paymentUiState = MutableStateFlow<PaymentUiState>(PaymentUiState.Loading)
+    private val _paymentUiState = MutableStateFlow<PaymentUiState>(PaymentUiState.Idle)
     val paymentUiState: StateFlow<PaymentUiState> = _paymentUiState.asStateFlow()
 
-    init {
+    fun pay() {
+        _paymentUiState.value = PaymentUiState.Processing
         viewModelScope.launch {
-            val order = cartRepository.cart.value
-            purchaseRepository.initiateTransaction(order)
+            paymentRepository.pay()
                 .onSuccess {
-                    _paymentUiState.value = PaymentUiState.PurchaseInfo(order.values.sum())
+                    _paymentUiState.value = PaymentUiState.Complete
                 }
-                .onFailure {
-                    _paymentUiState.value = PaymentUiState.Error
-                }
+                .onFailure(::handlePaymentError)
         }
     }
 
-    /**
-     * Cancel any ongoing transaction
-     */
-    fun cleanup() {
-        _paymentUiState.value = PaymentUiState.Cleanup.Processing
-        viewModelScope.launch {
-            purchaseRepository.cancelOngoingTransaction()
-                .onSuccess {
-                    _paymentUiState.value = PaymentUiState.Cleanup.Finished
-                }
-                .onFailure {
-                    // error during cancellation or during error handling itself
-                    // I assume it is out of scope of interview task, yet it's important case
-                    _paymentUiState.value = PaymentUiState.Cleanup.Error
-                }
-        }
+    private fun handlePaymentError(paymentError: PaymentError) {
+        _paymentUiState.value = PaymentUiState.Error(
+            when (paymentError) {
+                PaymentError.InternalPaymentError -> PaymentUiError.PAYMENT_ERROR
+                PaymentError.GeneralCardReaderError,
+                PaymentError.KnownCardReaderError -> PaymentUiError.CARD_ERROR
+
+                PaymentError.Canceled,
+                PaymentError.TransactionNotFound -> PaymentUiError.GENERAL_ERROR
+            }
+        )
+    }
+
+    fun onErrorAcknowledge() {
+        // here can goes max retry logic etc.
+        _paymentUiState.value = PaymentUiState.Idle
     }
 }
 
 sealed interface PaymentUiState {
-    data class PurchaseInfo(val itemCount: Long) : PaymentUiState
-    object Loading : PaymentUiState
-    object Error : PaymentUiState
+    object Idle : PaymentUiState
+    object Complete : PaymentUiState
+    object Processing : PaymentUiState
+    data class Error(val type: PaymentUiError) : PaymentUiState
+}
 
-    sealed interface Cleanup : PaymentUiState {
-        object Processing : Cleanup
-        object Finished : Cleanup
-        object Error : Cleanup
-    }
+enum class PaymentUiError {
+    CARD_ERROR,
+    PAYMENT_ERROR,
+    GENERAL_ERROR,
 }

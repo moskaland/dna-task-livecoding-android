@@ -10,11 +10,15 @@ internal class TransactionInMemoryDataSource @Inject constructor() : Transaction
     private val _cart = MutableStateFlow<Transaction?>(null)
     override val transaction = _cart.asStateFlow()
 
-    override fun setTransaction(transaction: Transaction) {
+    override suspend fun setTransaction(transaction: Transaction) {
         _cart.value = transaction
     }
 
-    override fun clear() {
+    override suspend fun clear() {
         _cart.value = null
+    }
+
+    override suspend fun markAsPaid() {
+        _cart.value = _cart.value?.copy(isPaid = true)
     }
 }

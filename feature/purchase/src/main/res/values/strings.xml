@@ -1,0 +1,11 @@
+<resources>
+    <string name="purchase_error_message">Unable to complete the purchase, please try again later.</string>
+    <string name="purchase_go_back">Navigate back</string>
+    <string name="purchase_cancellation_error">Unable to cancel an ongoing transaction!</string>
+    <string name="purchase_canceling_order">Cancelling order…</string>
+    <string name="purchase_finalize">Order and pay</string>
+    <plurals name="purchase_order_description">
+        <item quantity="one">Pay for %1$d item</item>
+        <item quantity="other">Pay for %1$d items</item>
+    </plurals>
+</resources>

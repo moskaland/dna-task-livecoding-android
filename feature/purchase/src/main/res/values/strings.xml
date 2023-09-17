@@ -4,6 +4,8 @@
     <string name="purchase_cancellation_error">Unable to cancel an ongoing transaction!</string>
     <string name="purchase_canceling_order">Cancelling order…</string>
     <string name="purchase_finalize">Order and pay</string>
+    <string name="purchase_transaction_ok">Your transaction succeeded!\nThanks for shopping with us!</string>
+    <string name="purchase_done">Done</string>
     <plurals name="purchase_order_description">
         <item quantity="one">Pay for %1$d item</item>
         <item quantity="other">Pay for %1$d items</item>

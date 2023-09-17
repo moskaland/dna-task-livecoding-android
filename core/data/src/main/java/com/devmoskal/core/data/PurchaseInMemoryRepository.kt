@@ -40,8 +40,8 @@ internal class PurchaseInMemoryRepository @Inject constructor(
 
     override suspend fun finalizeTransaction(): Result<Unit, PurchaseErrors> {
         mutex.withLock {
-            val transaction = transactionDataSource.transaction.value
-                ?: return Result.Failure(PurchaseErrors.TransactionNotFound)
+            val transaction =
+                transactionDataSource.transaction.value ?: return Result.Failure(PurchaseErrors.TransactionNotFound)
 
             val response =
                 purchaseApiClient.confirm(PurchaseConfirmRequest(transaction.order, transaction.transactionID))

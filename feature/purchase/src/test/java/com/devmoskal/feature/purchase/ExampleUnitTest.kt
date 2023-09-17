@@ -1,4 +1,4 @@
-package com.devmoskal.feature.payment
+package com.devmoskal.feature.purchase
 
 import org.junit.Assert.assertEquals
 import org.junit.Test

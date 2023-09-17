@@ -1,0 +1,5 @@
+<resources>
+    <string name="design_system_error_dialog_title">Whoops!\nAn error occurred! </string>
+    <string name="design_system_error_dialog_message">Something went wrong, please try again later.</string>
+    <string name="design_system_error_dialog_cta">OK</string>
+</resources>

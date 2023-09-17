@@ -6,8 +6,9 @@ import com.devmoskal.core.service.cardReader.model.CardReaderException
 import kotlinx.coroutines.delay
 import java.util.Calendar
 import java.util.UUID
+import javax.inject.Inject
 
-class MockCardReaderService : CardReaderService {
+internal class MockCardReaderService @Inject constructor() : CardReaderService {
 
     override suspend fun readCard(): CardData {
         val second = Calendar.getInstance().get(Calendar.SECOND)

@@ -3,6 +3,7 @@ package com.devmoskal.feature.payment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devmoskal.core.data.PaymentRepository
+import com.devmoskal.core.data.PurchaseRepository
 import com.devmoskal.core.data.model.PaymentError
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +14,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PaymentViewModel @Inject constructor(
-    private val paymentRepository: PaymentRepository
+    private val paymentRepository: PaymentRepository,
+    private val purchaseRepository: PurchaseRepository, // TODO ###
 ) : ViewModel() {
     private val _paymentUiState = MutableStateFlow<PaymentUiState>(PaymentUiState.Idle)
     val paymentUiState: StateFlow<PaymentUiState> = _paymentUiState.asStateFlow()
@@ -23,10 +25,15 @@ class PaymentViewModel @Inject constructor(
         viewModelScope.launch {
             paymentRepository.pay()
                 .onSuccess {
+                    finalizeTransaction()
                     _paymentUiState.value = PaymentUiState.Complete
                 }
                 .onFailure(::handlePaymentError)
         }
+    }
+
+    private suspend fun finalizeTransaction() {
+        purchaseRepository.finalizeTransaction()
     }
 
     private fun handlePaymentError(paymentError: PaymentError) {

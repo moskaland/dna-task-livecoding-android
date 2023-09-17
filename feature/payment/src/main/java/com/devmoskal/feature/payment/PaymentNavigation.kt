@@ -16,16 +16,26 @@ fun NavController.navigateToPayment() {
     }
 }
 
-fun NavGraphBuilder.paymentScreen(navigateUp: () -> Boolean) {
+fun NavGraphBuilder.paymentScreen(navigateUp: () -> Boolean, navigateOnPaymentSucceed: () -> Unit) {
     composable(route = paymentRoute) {
-        PaymentRoute(navigateUp)
+        PaymentRoute(navigateUp, navigateOnPaymentSucceed)
     }
 }
 
 @Composable
-fun PaymentRoute(navigateUp: () -> Boolean, paymentViewModel: PaymentViewModel = hiltViewModel()) {
+fun PaymentRoute(
+    navigateUp: () -> Boolean,
+    navigateOnPaymentSucceed: () -> Unit,
+    paymentViewModel: PaymentViewModel = hiltViewModel()
+) {
     val uiState by paymentViewModel.paymentUiState.collectAsStateWithLifecycle()
-    PaymentScreen(uiState, paymentViewModel::pay, paymentViewModel::onErrorAcknowledge, navigateUp)
+    PaymentScreen(
+        uiState,
+        paymentViewModel::pay,
+        paymentViewModel::onErrorAcknowledgeByUser,
+        navigateUp,
+        navigateOnPaymentSucceed
+    )
 }
 
 

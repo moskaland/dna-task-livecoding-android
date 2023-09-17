@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PaymentViewModel @Inject constructor(
-    private val paymentRepository: PaymentRepository
+    private val paymentRepository: PaymentRepository,
 ) : ViewModel() {
     private val _paymentUiState = MutableStateFlow<PaymentUiState>(PaymentUiState.Idle)
     val paymentUiState: StateFlow<PaymentUiState> = _paymentUiState.asStateFlow()
@@ -42,7 +42,7 @@ class PaymentViewModel @Inject constructor(
         )
     }
 
-    fun onErrorAcknowledge() {
+    fun onErrorAcknowledgeByUser() {
         // here can goes max retry logic etc.
         _paymentUiState.value = PaymentUiState.Idle
     }

@@ -7,18 +7,18 @@ import javax.inject.Inject
 
 internal class TransactionInMemoryDataSource @Inject constructor() : TransactionDataSource {
 
-    private val _cart = MutableStateFlow<Transaction?>(null)
-    override val transaction = _cart.asStateFlow()
+    private val _transaction = MutableStateFlow<Transaction?>(null)
+    override val transaction = _transaction.asStateFlow()
 
     override suspend fun setTransaction(transaction: Transaction) {
-        _cart.value = transaction
+        _transaction.value = transaction
     }
 
     override suspend fun clear() {
-        _cart.value = null
+        _transaction.value = null
     }
 
     override suspend fun markAsPaid() {
-        _cart.value = _cart.value?.copy(isPaid = true)
+        _transaction.value = _transaction.value?.copy(isPaid = true)
     }
 }

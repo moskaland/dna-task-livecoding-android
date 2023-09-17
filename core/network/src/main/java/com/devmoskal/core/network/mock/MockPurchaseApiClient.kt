@@ -58,7 +58,7 @@ internal class MockPurchaseApiClient @Inject constructor() : PurchaseApiClient {
             return PurchaseStatusResponse(purchaseRequest.transactionID, TransactionStatus.FAILED)
         }
 
-        return try {
+        try {
             val sum = purchaseRequest.order.map { entry ->
                 val orderedProduct = productList.first { product -> product.productID == entry.key }
 

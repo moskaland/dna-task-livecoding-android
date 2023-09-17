@@ -9,6 +9,7 @@ import com.devmoskal.core.model.Transaction
 import com.devmoskal.core.model.TransactionStatus
 import com.devmoskal.core.network.PurchaseApiClient
 import com.devmoskal.core.network.model.PurchaseCancelRequest
+import com.devmoskal.core.network.model.PurchaseConfirmRequest
 import com.devmoskal.core.network.model.PurchaseRequest
 import com.devmoskal.core.network.model.PurchaseResponse
 import com.devmoskal.core.service.cardReader.CardReaderService
@@ -37,11 +38,20 @@ internal class PurchaseInMemoryRepository @Inject constructor(
         }
     }
 
-    // TODO properly handle card payment; move it to Payment Repository, and most likely separate screen.
-    // Also This method is doing waay to much. Split it if times allows
     override suspend fun finalizeTransaction(): Result<Unit, PurchaseErrors> {
-        cardReaderService.readCard()
-        TODO()
+        mutex.withLock {
+            val transaction =
+                transactionDataSource.transaction.value ?: return Result.Failure(PurchaseErrors.TransactionNotFound)
+
+            val response =
+                purchaseApiClient.confirm(PurchaseConfirmRequest(transaction.order, transaction.transactionID))
+            return if (response.status == TransactionStatus.CONFIRMED) {
+                transactionDataSource.clear()
+                Result.Success(Unit)
+            } else {
+                Result.Failure(PurchaseErrors.GeneralError)
+            }
+        }
     }
 
     override suspend fun cancelOngoingTransaction(): Result<Unit, PurchaseErrors> {
@@ -54,11 +64,9 @@ internal class PurchaseInMemoryRepository @Inject constructor(
                 ongoingTransaction == null -> {
                     Result.Success(Unit)
                 }
-
                 ongoingTransaction.status == TransactionStatus.INITIATED -> {
                     performCancellationApiCall(ongoingTransaction.transactionID)
                 }
-
                 else -> {
                     transactionDataSource.clear()
                     Result.Success(Unit)

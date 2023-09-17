@@ -1,4 +1,4 @@
-package com.devmoskal.feature.purchase
+package com.devmoskal.feature.purchase.checkout
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,23 +12,23 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class PurchaseViewModel @Inject constructor(
+class CheckoutViewModel @Inject constructor(
     private val cartRepository: CartRepository,
     private val purchaseRepository: PurchaseRepository,
 ) : ViewModel() {
 
-    private val _purchaseUiState = MutableStateFlow<PurchaseUiState>(PurchaseUiState.Loading)
-    val purchaseUiState: StateFlow<PurchaseUiState> = _purchaseUiState.asStateFlow()
+    private val _checkoutUiState = MutableStateFlow<CheckoutUiState>(CheckoutUiState.Loading)
+    val checkoutUiState: StateFlow<CheckoutUiState> = _checkoutUiState.asStateFlow()
 
     init {
         viewModelScope.launch {
             val order = cartRepository.cart.value
             purchaseRepository.initiateTransaction(order)
                 .onSuccess {
-                    _purchaseUiState.value = PurchaseUiState.Data(order.values.sum())
+                    _checkoutUiState.value = CheckoutUiState.Data(order.values.sum())
                 }
                 .onFailure {
-                    _purchaseUiState.value = PurchaseUiState.Error
+                    _checkoutUiState.value = CheckoutUiState.Error
                 }
         }
     }
@@ -37,27 +37,27 @@ class PurchaseViewModel @Inject constructor(
      * Cancel any ongoing transaction
      */
     fun cleanup() {
-        _purchaseUiState.value = PurchaseUiState.Cleanup.Processing
+        _checkoutUiState.value = CheckoutUiState.Cleanup.Processing
         viewModelScope.launch {
             purchaseRepository.cancelOngoingTransaction()
                 .onSuccess {
-                    _purchaseUiState.value = PurchaseUiState.Cleanup.Finished
+                    _checkoutUiState.value = CheckoutUiState.Cleanup.Finished
                 }
                 .onFailure {
                     // error during cancellation or during error handling itself
                     // I assume it is out of scope of interview task, yet it's important case
-                    _purchaseUiState.value = PurchaseUiState.Cleanup.Error
+                    _checkoutUiState.value = CheckoutUiState.Cleanup.Error
                 }
         }
     }
 }
 
-sealed interface PurchaseUiState {
-    data class Data(val itemCount: Long) : PurchaseUiState
-    object Loading : PurchaseUiState
-    object Error : PurchaseUiState
+sealed interface CheckoutUiState {
+    data class Data(val itemCount: Long) : CheckoutUiState
+    object Loading : CheckoutUiState
+    object Error : CheckoutUiState
 
-    sealed interface Cleanup : PurchaseUiState {
+    sealed interface Cleanup : CheckoutUiState {
         object Processing : Cleanup
         object Finished : Cleanup
         object Error : Cleanup

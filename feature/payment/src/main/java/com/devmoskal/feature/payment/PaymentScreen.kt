@@ -1,6 +1,5 @@
 package com.devmoskal.feature.payment
 
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,7 +14,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,6 +30,7 @@ fun PaymentScreen(
     onPayClick: () -> Unit,
     onErrorAcknowledge: () -> Unit,
     navigateUp: () -> Boolean,
+    navigateOnPaymentSucceed: () -> Unit,
 ) {
     BackHandler {
         if (uiState is PaymentUiState.Idle) {
@@ -50,10 +49,7 @@ fun PaymentScreen(
         )
 
         is PaymentUiState.Processing -> ProcessingIndicator()
-        is PaymentUiState.Complete -> {
-            Toast.makeText(LocalContext.current, stringResource(R.string.payment_successful), Toast.LENGTH_SHORT).show()
-            navigateUp()
-        }
+        is PaymentUiState.Complete -> navigateOnPaymentSucceed()
 
         is PaymentUiState.Error -> ErrorDialog(
             message = when (uiState.type) {
@@ -89,6 +85,6 @@ fun ProcessingIndicator() {
 @Composable
 fun DefaultPreview() {
     DNATaskAndroidTheme {
-        PaymentScreen(PaymentUiState.Idle, {}, {}, { true })
+        PaymentScreen(PaymentUiState.Idle, {}, {}, { true }, {})
     }
 }

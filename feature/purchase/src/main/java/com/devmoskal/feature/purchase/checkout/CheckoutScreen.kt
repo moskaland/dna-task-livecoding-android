@@ -1,4 +1,4 @@
-package com.devmoskal.feature.purchase
+package com.devmoskal.feature.purchase.checkout
 
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
@@ -29,24 +29,25 @@ import com.devmoskal.core.designsystem.theme.MainText
 import com.devmoskal.core.designsystem.theme.White
 import com.devmoskal.core.designsystem.theme.component.CTAButton
 import com.devmoskal.core.designsystem.theme.component.ErrorDialog
+import com.devmoskal.feature.purchase.R
 
 @Composable
-fun PurchaseScreen(
-    uiState: PurchaseUiState,
+fun checkoutScreen(
+    uiState: CheckoutUiState,
     onBackPressed: () -> Unit,
     onPayClick: () -> Unit,
     navigateUp: () -> Boolean,
 ) {
     BackHandler {
-        if (uiState is PurchaseUiState.Data) {
+        if (uiState is CheckoutUiState.Data) {
             onBackPressed()
         }
     }
-    PurchaseContent(uiState, onPayClick)
+    CheckoutContent(uiState, onPayClick)
 
     when (uiState) {
-        is PurchaseUiState.Cleanup.Finished -> navigateUp()
-        is PurchaseUiState.Cleanup.Error -> {
+        is CheckoutUiState.Cleanup.Finished -> navigateUp()
+        is CheckoutUiState.Cleanup.Error -> {
             Toast.makeText(
                 LocalContext.current,
                 stringResource(R.string.purchase_cancellation_error),
@@ -56,7 +57,7 @@ fun PurchaseScreen(
             navigateUp()
         }
 
-        is PurchaseUiState.Error -> ErrorDialog(
+        is CheckoutUiState.Error -> ErrorDialog(
             message = R.string.purchase_error_message,
             buttonText = R.string.purchase_go_back,
             closeAction = onBackPressed,
@@ -67,7 +68,7 @@ fun PurchaseScreen(
 }
 
 @Composable
-internal fun PurchaseContent(uiState: PurchaseUiState, onPayClick: () -> Unit) {
+internal fun CheckoutContent(uiState: CheckoutUiState, onPayClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -83,7 +84,7 @@ internal fun PurchaseContent(uiState: PurchaseUiState, onPayClick: () -> Unit) {
 }
 
 @Composable
-private fun Header(uiState: PurchaseUiState) {
+private fun Header(uiState: CheckoutUiState) {
     Row(
         Modifier
             .background(Gray)
@@ -92,7 +93,7 @@ private fun Header(uiState: PurchaseUiState) {
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (uiState is PurchaseUiState.Data) {
+        if (uiState is CheckoutUiState.Data) {
             Text(
                 fontSize = 22.sp,
                 // currently pluralStringResource supports only int, conversion itemCount.toInt() is a shortcut done in interview/MVP scope
@@ -104,7 +105,7 @@ private fun Header(uiState: PurchaseUiState) {
             )
         } else {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                if (uiState is PurchaseUiState.Cleanup) {
+                if (uiState is CheckoutUiState.Cleanup) {
                     Text(text = stringResource(R.string.purchase_canceling_order), Modifier.padding(bottom = 8.dp))
                 }
                 LinearProgressIndicator(
@@ -122,6 +123,6 @@ private fun Header(uiState: PurchaseUiState) {
 @Composable
 fun DefaultPreview() {
     DNATaskAndroidTheme {
-        PurchaseScreen(PurchaseUiState.Data(5L), {}, {}, { true })
+        checkoutScreen(CheckoutUiState.Data(5L), {}, {}, { true })
     }
 }

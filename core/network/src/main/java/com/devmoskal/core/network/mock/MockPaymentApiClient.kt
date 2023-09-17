@@ -14,7 +14,7 @@ internal class MockPaymentApiClient @Inject constructor() : PaymentApiClient {
     override suspend fun pay(paymentRequest: PaymentRequest): PaymentResponse {
         delay(2500)
 
-        return if (paymentRequest.currency == "EUR" && paymentRequest.amount >= 20.00) {
+        return if (paymentRequest.currency == "EUR" && paymentRequest.amount >= 5.00) { // I made this change to smoothen test app experience
             PaymentResponse(paymentRequest.transactionID, PaymentStatus.SUCCESS)
         } else {
             PaymentResponse(paymentRequest.transactionID, PaymentStatus.FAILED)

@@ -16,16 +16,16 @@ fun NavController.navigateToPayment() {
     }
 }
 
-fun NavGraphBuilder.paymentScreen() {
+fun NavGraphBuilder.paymentScreen(navigateUp: () -> Boolean) {
     composable(route = paymentRoute) {
-        PaymentRoute()
+        PaymentRoute(navigateUp)
     }
 }
 
 @Composable
-fun PaymentRoute(paymentViewModel: PaymentViewModel = hiltViewModel()) {
+fun PaymentRoute(navigateUp: () -> Boolean, paymentViewModel: PaymentViewModel = hiltViewModel()) {
     val uiState by paymentViewModel.paymentUiState.collectAsStateWithLifecycle()
-    PaymentScreen(uiState)
+    PaymentScreen(uiState, paymentViewModel::cleanup, navigateUp)
 }
 
 

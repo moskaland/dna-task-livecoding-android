@@ -20,6 +20,6 @@ fun RootNavHost(
         modifier = modifier
     ) {
         productsScreen(navController::navigateToPayment)
-        paymentScreen()
+        paymentScreen(navController::navigateUp)
     }
 }

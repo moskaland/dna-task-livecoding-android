@@ -7,6 +7,7 @@ import com.devmoskal.core.datasource.TransactionDataSource
 import com.devmoskal.core.model.Transaction
 import com.devmoskal.core.model.TransactionStatus
 import com.devmoskal.core.network.PurchaseApiClient
+import com.devmoskal.core.network.model.PurchaseCancelRequest
 import com.devmoskal.core.network.model.PurchaseRequest
 import com.devmoskal.core.network.model.PurchaseResponse
 import kotlinx.coroutines.CoroutineDispatcher
@@ -23,18 +24,43 @@ internal class PurchaseInMemoryRepository @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : PurchaseRepository {
 
-
     override suspend fun initiateTransaction(order: Map<String, Long>): Result<Unit, PurchaseErrors> {
         mutex.withLock {
-            if (transactionDataSource.transaction.value != null) {
+            if (isOngoingTransaction()) {
                 Log.e("PurchaseRepository", "Corrupted state, there should NOT be more than one ongoing payment flow!")
                 return Result.Failure(PurchaseErrors.AnotherTransactionInProgressError)
             }
-            return performInitApiCall(order)
+            return performInitialApiCall(order)
         }
     }
 
-    private suspend fun performInitApiCall(order: Map<String, Long>): Result<Unit, PurchaseErrors> =
+    override suspend fun cancelOngoingTransaction(): Result<Unit, PurchaseErrors> {
+        mutex.withLock {
+            val ongoingTransaction = transactionDataSource.transaction.value
+            if (ongoingTransaction?.isPaid == true) {
+                // TODO refund
+            }
+            return when {
+                ongoingTransaction == null -> {
+                    Result.Success(Unit)
+                }
+
+                ongoingTransaction.status == TransactionStatus.INITIATED -> {
+                    performCancellationApiCall(ongoingTransaction.transactionID)
+                }
+
+                else -> {
+                    transactionDataSource.clear()
+                    Result.Success(Unit)
+                }
+            }
+        }
+
+    }
+
+    private fun isOngoingTransaction() = transactionDataSource.transaction.value != null
+
+    private suspend fun performInitialApiCall(order: Map<String, Long>): Result<Unit, PurchaseErrors> =
         withContext(ioDispatcher) {
             val response = purchaseApiClient.initiatePurchaseTransaction(PurchaseRequest(order))
             if (response.transactionStatus == TransactionStatus.INITIATED) {
@@ -42,6 +68,17 @@ internal class PurchaseInMemoryRepository @Inject constructor(
                 Result.Success(Unit)
             } else {
                 Result.Failure(PurchaseErrors.GeneralError)
+            }
+        }
+
+    private suspend fun performCancellationApiCall(transactionId: String): Result<Unit, PurchaseErrors> =
+        withContext(ioDispatcher) {
+            val response = purchaseApiClient.cancel(PurchaseCancelRequest(transactionId))
+            if (response.status == TransactionStatus.CANCELLED) {
+                transactionDataSource.clear()
+                Result.Success(Unit)
+            } else {
+                Result.Failure(PurchaseErrors.UnableToCancelTransaction)
             }
         }
 

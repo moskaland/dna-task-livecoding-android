@@ -25,12 +25,28 @@ class PaymentViewModel @Inject constructor(
             val order = cartRepository.cart.value
             purchaseRepository.initiateTransaction(order)
                 .onSuccess {
-                    _paymentUiState.value = PaymentUiState.PurchaseInfo(
-                        order.values.sum()
-                    )
+                    _paymentUiState.value = PaymentUiState.PurchaseInfo(order.values.sum())
                 }
                 .onFailure {
                     _paymentUiState.value = PaymentUiState.Error
+                }
+        }
+    }
+
+    /**
+     * Cancel any ongoing transaction
+     */
+    fun cleanup() {
+        _paymentUiState.value = PaymentUiState.Cleanup.Processing
+        viewModelScope.launch {
+            purchaseRepository.cancelOngoingTransaction()
+                .onSuccess {
+                    _paymentUiState.value = PaymentUiState.Cleanup.Finished
+                }
+                .onFailure {
+                    // error during cancellation or during error handling itself
+                    // I assume it is out of scope of interview task, yet it's important case
+                    _paymentUiState.value = PaymentUiState.Cleanup.Error
                 }
         }
     }
@@ -40,4 +56,10 @@ sealed interface PaymentUiState {
     data class PurchaseInfo(val itemCount: Long) : PaymentUiState
     object Loading : PaymentUiState
     object Error : PaymentUiState
+
+    sealed interface Cleanup : PaymentUiState {
+        object Processing : Cleanup
+        object Finished : Cleanup
+        object Error : Cleanup
+    }
 }

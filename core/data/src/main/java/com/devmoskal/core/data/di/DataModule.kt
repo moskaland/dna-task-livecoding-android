@@ -40,6 +40,7 @@ internal interface InternalRepositoryModule {
     fun bindsPaymentRepository(paymentWithCardRepository: PaymentWithCardRepository): PaymentRepository
 
     @Binds
+    @Singleton // Work in progress: stateMachinePurchaseSession is stateful, so needs to be shared
     fun bindsPurchaseSession(stateMachinePurchaseSession: StateMachinePurchaseSession): PurchaseSession
 }
 

@@ -16,7 +16,7 @@ fun NavController.navigateToCheckout() {
     }
 }
 
-fun NavGraphBuilder.checkoutScreen(navigateUp: () -> Boolean, navigateToPayment: () -> Unit) {
+fun NavGraphBuilder.CheckoutScreen(navigateUp: () -> Boolean, navigateToPayment: () -> Unit) {
     composable(route = checkoutRoute) {
         CheckoutRoute(navigateUp, navigateToPayment)
     }
@@ -29,7 +29,7 @@ fun CheckoutRoute(
     checkoutViewModel: CheckoutViewModel = hiltViewModel()
 ) {
     val uiState by checkoutViewModel.checkoutUiState.collectAsStateWithLifecycle()
-    checkoutScreen(
+    CheckoutScreen(
         uiState,
         checkoutViewModel::cleanup,
         navigateToPayment,

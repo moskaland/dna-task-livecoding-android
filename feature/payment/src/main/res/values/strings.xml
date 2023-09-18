@@ -5,5 +5,4 @@
     <string name="payment_card_error">Unable to process the card. Please try again or contact your card provider.</string>
     <string name="payment_payment_error">Unable to process your payment. Please try again</string>
     <string name="payment_general_error">General system error. Please try again</string>
-    <string name="payment_successful">payment successful</string>
 </resources>

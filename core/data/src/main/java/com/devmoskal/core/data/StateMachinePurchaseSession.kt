@@ -28,6 +28,13 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+/**
+ * Work In Progress.
+ *
+ * I've used state machine to limit flow to only legal transition.
+ * Yet, I've done it quite late during implementation, so I do not utilize its benefit.
+ * As for now state machine it's mostly unused, rather as interesting concept than real part of system.
+ */
 internal class StateMachinePurchaseSession @Inject constructor(
     private val dataSource: PurchaseSessionDataSource,
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,

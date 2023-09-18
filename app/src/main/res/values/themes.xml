@@ -5,16 +5,4 @@
         <item name="android:statusBarColor">@color/main_background</item>
     </style>
 
-    <style name="Theme.DNATaskAndroid.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-        <item name="android:fitsSystemWindows">true</item>
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:windowTranslucentStatus">false</item>
-
-    </style>
-
-    <style name="Theme.DNATaskAndroid.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-    <style name="Theme.DNATaskAndroid.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

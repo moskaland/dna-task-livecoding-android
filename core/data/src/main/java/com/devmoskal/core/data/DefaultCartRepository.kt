@@ -27,7 +27,6 @@ internal class DefaultCartRepository @Inject constructor(
     }
 
     override suspend fun calculateTotalValue(): Double {
-        // This piece of logic should most likely be done on backend side
         val products = withContext(ioDispatcher) {
             productRepository.getProducts()
         }

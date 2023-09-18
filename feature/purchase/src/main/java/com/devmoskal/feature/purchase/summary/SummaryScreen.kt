@@ -36,13 +36,25 @@ fun SummaryScreen(
     when (uiState) {
         is SummaryUiState.Loading -> Loading()
         is SummaryUiState.Success -> SuccessContent(navigateOutOfPurchaseFlow)
-
-        is SummaryUiState.Error -> ErrorDialog(
-            message = R.string.purchase_error_message,
-            buttonText = R.string.purchase_go_back,
-            closeAction = navigateOutOfPurchaseFlow,
-        )
+        is SummaryUiState.Error -> ErrorDialog(uiState, navigateOutOfPurchaseFlow)
     }
+}
+
+@Composable
+private fun ErrorDialog(
+    uiState: SummaryUiState.Error,
+    navigateOutOfPurchaseFlow: () -> Unit
+) {
+    ErrorDialog(
+        title = R.string.purchase_error_title_not_confirmed,
+        message = if (uiState.wasRefunded) {
+            R.string.purchase_error_message_not_confirmed_refunded
+        } else {
+            R.string.purchase_error_message_not_confirmed_not_refunded
+        },
+        buttonText = R.string.purchase_acknowledge,
+        closeAction = navigateOutOfPurchaseFlow,
+    )
 }
 
 @Composable

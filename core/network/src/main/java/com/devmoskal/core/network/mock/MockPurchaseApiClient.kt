@@ -20,6 +20,7 @@ internal class MockPurchaseApiClient @Inject constructor() : PurchaseApiClient {
             Product("12347", "Small soda", 1000, 1.25, "EUR", 0.22),
             Product("12348", "Chips", 2000, 4.33, "EUR", 0.22),
             Product("12349", "Snack bar", 0, 10.99, "EUR", 0.23),
+            Product("12350", "Gold bar", 1, 100.99, "EUR", 0.23),
         )
     }
 

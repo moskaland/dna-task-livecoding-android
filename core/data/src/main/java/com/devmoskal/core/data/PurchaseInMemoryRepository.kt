@@ -2,6 +2,7 @@ package com.devmoskal.core.data
 
 import android.util.Log
 import com.devmoskal.core.common.Result
+import com.devmoskal.core.common.di.DefaultDispatcher
 import com.devmoskal.core.common.di.IoDispatcher
 import com.devmoskal.core.data.model.PurchaseErrors
 import com.devmoskal.core.data.model.TransactionEvent
@@ -26,10 +27,11 @@ internal class PurchaseInMemoryRepository @Inject constructor(
     private val cartRepository: CartRepository,
     @Named("SessionMutex") private val mutex: Mutex,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
 ) : PurchaseRepository {
 
     override suspend fun initiateTransaction(order: Map<String, Long>): Result<Unit, PurchaseErrors> {
-        mutex.withLock {
+        mutex.withLock(defaultDispatcher) {
             if (isOngoingTransaction()) {
                 Log.e("PurchaseRepository", "Corrupted state, there should NOT be more than one ongoing payment flow!")
                 return Result.Failure(PurchaseErrors.AnotherTransactionInProgressError)
@@ -39,7 +41,7 @@ internal class PurchaseInMemoryRepository @Inject constructor(
     }
 
     override suspend fun finalizeTransaction(): Result<Unit, PurchaseErrors> {
-        mutex.withLock {
+        mutex.withLock(defaultDispatcher) {
             val transaction = session.state.value ?: return Result.Failure(PurchaseErrors.TransactionNotFound)
 
             val response =
@@ -49,17 +51,18 @@ internal class PurchaseInMemoryRepository @Inject constructor(
                 cartRepository.clear()
                 Result.Success
             } else {
-                // TODO refund
-                Result.Failure(PurchaseErrors.GeneralError)
+                // should handle additional corrupted state case: transaction.paymentInfo is PaymentInfo.Paid
+                Result.Failure(PurchaseErrors.UnableToConfirmTransaction)
             }
         }
     }
 
     override suspend fun cancelOngoingTransaction(): Result<Unit, PurchaseErrors> {
-        mutex.withLock {
+        mutex.withLock(defaultDispatcher) {
             val sessionData = session.state.value
             if (sessionData?.paymentInfo is PaymentInfo.Paid) {
-                // TODO refund
+                // mvp
+                Result.Failure(PurchaseErrors.UnableToCancelTransaction)
             }
             return when {
                 sessionData == null -> Result.Success
@@ -97,7 +100,7 @@ internal class PurchaseInMemoryRepository @Inject constructor(
         withContext(ioDispatcher) {
             val response = purchaseApiClient.cancel(PurchaseCancelRequest(transactionId))
             if (response.status == TransactionStatus.CANCELLED) {
-                session.clear() // MVP do not process CANCELLED state
+                session.clear()
                 Result.Success
             } else {
                 Result.Failure(PurchaseErrors.UnableToCancelTransaction)

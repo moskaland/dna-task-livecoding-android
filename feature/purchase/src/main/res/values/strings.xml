@@ -6,6 +6,12 @@
     <string name="purchase_finalize">Order and pay</string>
     <string name="purchase_transaction_ok">Your transaction succeeded!\nThanks for shopping with us!</string>
     <string name="purchase_done">Done</string>
+
+    <string name="purchase_error_message_not_confirmed_refunded">Unable to complete the purchase, yet your funds were refunded.\nPlease try again.</string>
+    <string name="purchase_error_title_not_confirmed">Attention!</string>
+    <string name="purchase_error_message_not_confirmed_not_refunded">Your funds were already deducted but we were unable to complete the purchase.\n\nPlease contact the merchant!</string>
+    <string name="purchase_acknowledge">Acknowledge</string>
+
     <plurals name="purchase_order_description">
         <item quantity="one">Pay for %1$d item</item>
         <item quantity="other">Pay for %1$d items</item>

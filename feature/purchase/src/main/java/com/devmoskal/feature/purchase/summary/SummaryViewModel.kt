@@ -3,6 +3,7 @@ package com.devmoskal.feature.purchase.summary
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devmoskal.core.data.PurchaseRepository
+import com.devmoskal.core.data.model.PurchaseErrors
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,7 +26,10 @@ class SummaryViewModel @Inject constructor(
                     _summaryUiState.value = SummaryUiState.Success
                 }
                 .onFailure {
-                    _summaryUiState.value = SummaryUiState.Error
+                    _summaryUiState.value = when (it) {
+                        is PurchaseErrors.UnableToConfirmTransaction -> SummaryUiState.Error(it.wasRefunded)
+                        else -> SummaryUiState.Error(wasRefunded = false)
+                    }
                 }
         }
     }
@@ -34,6 +38,5 @@ class SummaryViewModel @Inject constructor(
 sealed interface SummaryUiState {
     object Success : SummaryUiState
     object Loading : SummaryUiState
-    object Error : SummaryUiState
-
+    data class Error(val wasRefunded: Boolean) : SummaryUiState
 }

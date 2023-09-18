@@ -36,7 +36,7 @@ class MockPaymentAPITests {
         // given
         val paymentRequest = PaymentRequest(
             transactionID = "Tr1",
-            amount = 19.66,
+            amount = 4.66,
             currency = "EUR",
             cardToken = "Token"
         )
@@ -109,7 +109,7 @@ class MockPurchaseAPITests {
         val products =  purchaseApiClient.getProducts()
 
         // then
-        assertEquals(products.size, 5)
+        assertEquals(products.size, 6)
     }
 
     @Test

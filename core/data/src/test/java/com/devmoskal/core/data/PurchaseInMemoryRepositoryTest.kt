@@ -30,7 +30,14 @@ class PurchaseInMemoryRepositoryTest {
     private val cartRepository: CartRepository = mockk()
     private val dispatcher: CoroutineDispatcher = StandardTestDispatcher()
     private val purchaseInMemoryRepository =
-        PurchaseInMemoryRepository(purchaseApiClient, transactionSession, cartRepository, Mutex(), dispatcher)
+        PurchaseInMemoryRepository(
+            purchaseApiClient,
+            transactionSession,
+            cartRepository,
+            Mutex(),
+            dispatcher,
+            dispatcher
+        )
 
     @Test
     fun `when initiating purchase with no ongoing transaction, start transaction and return success`() =

@@ -37,6 +37,7 @@ class PaymentViewModel @Inject constructor(
                 PaymentError.KnownCardReaderError -> PaymentUiError.CARD_ERROR
 
                 PaymentError.Canceled,
+                PaymentError.RefundError,
                 PaymentError.TransactionNotFound -> PaymentUiError.GENERAL_ERROR
             }
         )

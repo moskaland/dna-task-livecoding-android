@@ -40,7 +40,7 @@ internal class StateMachineTransactionSession @Inject constructor(
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
 ) : TransactionSession {
     override val state: StateFlow<TransactionSessionData?> = dataSource.data
-    private val stateMachine = defineStateMachine()
+    private var stateMachine = initStateMachine()
 
     override suspend fun process(event: TransactionEvent): Result<Unit, InvalidTransitionException> =
         withContext(defaultDispatcher) {
@@ -54,6 +54,7 @@ internal class StateMachineTransactionSession @Inject constructor(
         }
 
     override suspend fun clear() {
+        stateMachine = initStateMachine()
         dataSource.clear()
     }
 
@@ -79,7 +80,7 @@ internal class StateMachineTransactionSession @Inject constructor(
         return Result.Success
     }
 
-    private fun defineStateMachine() = StateMachine.create<SessionState, TransactionEvent, Unit> {
+    private fun initStateMachine() = StateMachine.create<SessionState, TransactionEvent, Unit> {
         initialState(Uninitialized)
         state<Uninitialized> {
             on<Initialize> {

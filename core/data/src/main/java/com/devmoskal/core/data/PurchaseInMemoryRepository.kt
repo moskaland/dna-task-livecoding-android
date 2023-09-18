@@ -49,8 +49,8 @@ internal class PurchaseInMemoryRepository @Inject constructor(
                 cartRepository.clear()
                 Result.Success
             } else {
-                // TODO refund
-                Result.Failure(PurchaseErrors.GeneralError)
+                // should handle additional corrupted state case: transaction.paymentInfo is PaymentInfo.Paid
+                Result.Failure(PurchaseErrors.UnableToConfirmTransaction)
             }
         }
     }
@@ -59,7 +59,8 @@ internal class PurchaseInMemoryRepository @Inject constructor(
         mutex.withLock {
             val sessionData = session.state.value
             if (sessionData?.paymentInfo is PaymentInfo.Paid) {
-                // TODO refund
+                // mvp
+                Result.Failure(PurchaseErrors.UnableToCancelTransaction)
             }
             return when {
                 sessionData == null -> Result.Success
@@ -97,7 +98,7 @@ internal class PurchaseInMemoryRepository @Inject constructor(
         withContext(ioDispatcher) {
             val response = purchaseApiClient.cancel(PurchaseCancelRequest(transactionId))
             if (response.status == TransactionStatus.CANCELLED) {
-                session.clear() // MVP do not process CANCELLED state
+                session.clear()
                 Result.Success
             } else {
                 Result.Failure(PurchaseErrors.UnableToCancelTransaction)

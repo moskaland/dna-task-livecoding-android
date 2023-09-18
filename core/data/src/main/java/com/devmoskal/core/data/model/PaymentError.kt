@@ -5,5 +5,6 @@ sealed class PaymentError {
     object GeneralCardReaderError : PaymentError()
     object InternalPaymentError : PaymentError()
     object TransactionNotFound : PaymentError()
+    object RefundError : PaymentError()
     object Canceled : PaymentError()
 }

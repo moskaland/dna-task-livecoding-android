@@ -15,7 +15,9 @@ I focused on showcasing my approach to app design and architecture (and also had
 - I did not use persistent storage; once the app process is killed, the ongoing transaction/session is lost and not handled on app restart
 - Lack of logging and documentation
 - The self-review process was very limited
-= I left the configuration mostly unchanged - Gradle files are messy, ProGuard is not configured, etc.
+- I left the configuration mostly unchanged - Gradle files are messy, ProGuard is not configured, etc.
+
+Note: it's worth to consider using Android Service for a Purchase/Payment flows. I ommited it in MVP approach as out scope of code challange.
 
 # Basic Flow in the app
 On ProductScreen, items are added to the cart. User can select items and navigates to checkout.
@@ -34,7 +36,6 @@ When the user tries to order products under 5 EUR, then a payment error will be 
 When the user tries to order a Gold Bar, then he will be able to pay but not confirm the order - money will be refunded.
 
 When the user tries to use a card, it will fail randomly 50% of the time.
-
 
 ## Environment requirements
 

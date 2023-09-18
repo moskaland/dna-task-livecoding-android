@@ -1,6 +1,6 @@
 package com.devmoskal.core.datasource
 
-import com.devmoskal.core.model.Transaction
+import com.devmoskal.core.model.TransactionSessionData
 import io.mockk.mockk
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -10,44 +10,44 @@ import org.junit.Test
 
 class PurchaseSessionInMemoryDataSourceTest {
 
-    private lateinit var purchaseSessionInMemoryDataSource: PurchaseSessionInMemoryDataSource
+    private lateinit var sessionInMemoryDataSource: TransactionSessionInMemoryDataSource
 
     @Before
     fun setUp() {
-        purchaseSessionInMemoryDataSource = PurchaseSessionInMemoryDataSource()
+        sessionInMemoryDataSource = TransactionSessionInMemoryDataSource()
     }
 
     @Test
     fun `when setting a transaction, it should be reflected in data source`() = runTest {
         // Given
-        val transaction = Transaction("id", mockk(), mockk())
+        val transaction = TransactionSessionData("id", mockk(), mockk(), 0.0)
 
         // When
-        purchaseSessionInMemoryDataSource.setTransaction(transaction)
+        sessionInMemoryDataSource.setData(transaction)
 
         // Then
-        assertThat(purchaseSessionInMemoryDataSource.data.first()).isEqualTo(transaction)
+        assertThat(sessionInMemoryDataSource.data.first()).isEqualTo(transaction)
     }
 
     @Test
     fun `when data source is initialized, it should be null`() = runTest {
         // Given
         // When
-        purchaseSessionInMemoryDataSource.clear()
+        sessionInMemoryDataSource.clear()
 
         // Then
-        assertThat(purchaseSessionInMemoryDataSource.data.first()).isNull()
+        assertThat(sessionInMemoryDataSource.data.first()).isNull()
     }
 
     @Test
     fun `when clearing transaction it should be null`() = runTest {
         // Given
-        purchaseSessionInMemoryDataSource.setData(mockk())
+        sessionInMemoryDataSource.setData(mockk())
 
         // When
-        purchaseSessionInMemoryDataSource.clear()
+        sessionInMemoryDataSource.clear()
 
         // Then
-        assertThat(purchaseSessionInMemoryDataSource.data.first()).isNull()
+        assertThat(sessionInMemoryDataSource.data.first()).isNull()
     }
 }

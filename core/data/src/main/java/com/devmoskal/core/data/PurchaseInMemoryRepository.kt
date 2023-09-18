@@ -4,7 +4,7 @@ import android.util.Log
 import com.devmoskal.core.common.Result
 import com.devmoskal.core.common.di.IoDispatcher
 import com.devmoskal.core.data.model.PurchaseErrors
-import com.devmoskal.core.data.model.PurchaseEvent
+import com.devmoskal.core.data.model.TransactionEvent
 import com.devmoskal.core.model.PaymentInfo
 import com.devmoskal.core.model.Transaction
 import com.devmoskal.core.model.TransactionStatus
@@ -22,7 +22,7 @@ import javax.inject.Named
 
 internal class PurchaseInMemoryRepository @Inject constructor(
     private val purchaseApiClient: PurchaseApiClient,
-    private val session: PurchaseSession,
+    private val session: TransactionSession,
     private val cartRepository: CartRepository,
     @Named("SessionMutex") private val mutex: Mutex,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
@@ -82,7 +82,7 @@ internal class PurchaseInMemoryRepository @Inject constructor(
             val response = purchaseApiClient.initiatePurchaseTransaction(PurchaseRequest(order))
             if (response.transactionStatus == TransactionStatus.INITIATED) {
                 session.process(
-                    PurchaseEvent.Initialize(
+                    TransactionEvent.Initialize(
                         response.toTransaction(),
                         cartRepository.calculateTotalValue()
                     )

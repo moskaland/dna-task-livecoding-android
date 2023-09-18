@@ -1,6 +1,6 @@
 package com.devmoskal.core.model
 
-data class PurchaseSessionData(
+data class TransactionSessionData(
     val transactionID: String,
     val status: TransactionStatus,
     val order: Map<String, Long>,

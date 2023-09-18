@@ -8,8 +8,8 @@ import com.devmoskal.core.data.ProductNetworkRepository
 import com.devmoskal.core.data.ProductRepository
 import com.devmoskal.core.data.PurchaseInMemoryRepository
 import com.devmoskal.core.data.PurchaseRepository
-import com.devmoskal.core.data.PurchaseSession
-import com.devmoskal.core.data.StateMachinePurchaseSession
+import com.devmoskal.core.data.StateMachineTransactionSession
+import com.devmoskal.core.data.TransactionSession
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -41,7 +41,7 @@ internal interface InternalRepositoryModule {
 
     @Binds
     @Singleton // Work in progress: stateMachinePurchaseSession is stateful, so needs to be shared
-    fun bindsPurchaseSession(stateMachinePurchaseSession: StateMachinePurchaseSession): PurchaseSession
+    fun bindsPurchaseSession(stateMachinePurchaseSession: StateMachineTransactionSession): TransactionSession
 }
 
 @Module

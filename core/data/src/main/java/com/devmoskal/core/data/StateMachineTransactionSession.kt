@@ -11,16 +11,16 @@ import com.devmoskal.core.data.SessionState.UnconfirmedPaid
 import com.devmoskal.core.data.SessionState.UnconfirmedUnpaid
 import com.devmoskal.core.data.SessionState.Uninitialized
 import com.devmoskal.core.data.model.InvalidTransitionException
-import com.devmoskal.core.data.model.PurchaseEvent
-import com.devmoskal.core.data.model.PurchaseEvent.Cancel
-import com.devmoskal.core.data.model.PurchaseEvent.Confirm
-import com.devmoskal.core.data.model.PurchaseEvent.Initialize
-import com.devmoskal.core.data.model.PurchaseEvent.Pay
-import com.devmoskal.core.data.model.PurchaseEvent.Refund
-import com.devmoskal.core.data.model.PurchaseEvent.TransactionFail
-import com.devmoskal.core.datasource.PurchaseSessionDataSource
+import com.devmoskal.core.data.model.TransactionEvent
+import com.devmoskal.core.data.model.TransactionEvent.Cancel
+import com.devmoskal.core.data.model.TransactionEvent.Confirm
+import com.devmoskal.core.data.model.TransactionEvent.Initialize
+import com.devmoskal.core.data.model.TransactionEvent.Pay
+import com.devmoskal.core.data.model.TransactionEvent.Refund
+import com.devmoskal.core.data.model.TransactionEvent.TransactionFail
+import com.devmoskal.core.datasource.TransactionSessionDataSource
 import com.devmoskal.core.model.PaymentInfo
-import com.devmoskal.core.model.PurchaseSessionData
+import com.devmoskal.core.model.TransactionSessionData
 import com.devmoskal.core.model.TransactionStatus
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.StateFlow
@@ -35,14 +35,14 @@ import javax.inject.Inject
  * Yet, I've done it quite late during implementation, so I do not utilize its benefit.
  * As for now state machine it's mostly unused, rather as interesting concept than real part of system.
  */
-internal class StateMachinePurchaseSession @Inject constructor(
-    private val dataSource: PurchaseSessionDataSource,
+internal class StateMachineTransactionSession @Inject constructor(
+    private val dataSource: TransactionSessionDataSource,
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
-) : PurchaseSession {
-    override val state: StateFlow<PurchaseSessionData?> = dataSource.data
+) : TransactionSession {
+    override val state: StateFlow<TransactionSessionData?> = dataSource.data
     private val stateMachine = defineStateMachine()
 
-    override suspend fun process(event: PurchaseEvent): Result<Unit, InvalidTransitionException> =
+    override suspend fun process(event: TransactionEvent): Result<Unit, InvalidTransitionException> =
         withContext(defaultDispatcher) {
             when (stateMachine.transition(event)) {
                 is StateMachine.Transition.Valid -> {
@@ -57,11 +57,11 @@ internal class StateMachinePurchaseSession @Inject constructor(
         dataSource.clear()
     }
 
-    private suspend fun updateSessionData(event: PurchaseEvent): Result<Unit, InvalidTransitionException> {
+    private suspend fun updateSessionData(event: TransactionEvent): Result<Unit, InvalidTransitionException> {
         dataSource.mutex.withLock {
             val currentData = dataSource.data.value
-            val newData: PurchaseSessionData = when (event) {
-                is Initialize -> PurchaseSessionData(
+            val newData: TransactionSessionData = when (event) {
+                is Initialize -> TransactionSessionData(
                     event.transaction.transactionID,
                     event.transaction.status,
                     event.transaction.order,
@@ -79,7 +79,7 @@ internal class StateMachinePurchaseSession @Inject constructor(
         return Result.Success
     }
 
-    private fun defineStateMachine() = StateMachine.create<SessionState, PurchaseEvent, Unit> {
+    private fun defineStateMachine() = StateMachine.create<SessionState, TransactionEvent, Unit> {
         initialState(Uninitialized)
         state<Uninitialized> {
             on<Initialize> {

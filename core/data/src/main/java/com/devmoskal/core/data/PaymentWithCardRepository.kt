@@ -3,9 +3,9 @@ package com.devmoskal.core.data
 import com.devmoskal.core.common.Result
 import com.devmoskal.core.common.di.DefaultDispatcher
 import com.devmoskal.core.data.model.PaymentError
-import com.devmoskal.core.data.model.PurchaseEvent
+import com.devmoskal.core.data.model.TransactionEvent
 import com.devmoskal.core.model.CardData
-import com.devmoskal.core.model.PurchaseSessionData
+import com.devmoskal.core.model.TransactionSessionData
 import com.devmoskal.core.network.PaymentApiClient
 import com.devmoskal.core.network.model.PaymentRequest
 import com.devmoskal.core.network.model.PaymentStatus
@@ -22,7 +22,7 @@ import javax.inject.Named
 
 internal class PaymentWithCardRepository @Inject constructor(
     private val cardReaderService: CardReaderService,
-    private val session: PurchaseSession,
+    private val session: TransactionSession,
     private val paymentApiClient: PaymentApiClient,
     @Named("SessionMutex") private val mutex: Mutex,
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
@@ -42,7 +42,7 @@ internal class PaymentWithCardRepository @Inject constructor(
 
         return when (paymentApiClient.pay(paymentRequest).status) {
             PaymentStatus.SUCCESS -> {
-                session.process(PurchaseEvent.Pay(cardData.token))
+                session.process(TransactionEvent.Pay(cardData.token))
                 Result.Success
             }
 
@@ -63,7 +63,7 @@ internal class PaymentWithCardRepository @Inject constructor(
         }
     }
 
-    private fun generatePaymentRequest(cardData: CardData, sessionData: PurchaseSessionData) =
+    private fun generatePaymentRequest(cardData: CardData, sessionData: TransactionSessionData) =
         PaymentRequest(
             sessionData.transactionID,
             sessionData.totalValue,

@@ -9,7 +9,7 @@ import com.devmoskal.feature.payment.paymentScreen
 import com.devmoskal.feature.products.popToProducts
 import com.devmoskal.feature.products.productsRoute
 import com.devmoskal.feature.products.productsScreen
-import com.devmoskal.feature.purchase.checkout.checkoutScreen
+import com.devmoskal.feature.purchase.checkout.CheckoutScreen
 import com.devmoskal.feature.purchase.checkout.navigateToCheckout
 import com.devmoskal.feature.purchase.summary.navigateToSummary
 import com.devmoskal.feature.purchase.summary.summaryScreen
@@ -25,7 +25,7 @@ fun RootNavHost(
         modifier = modifier
     ) {
         productsScreen(navController::navigateToCheckout)
-        checkoutScreen(navController::navigateUp, navController::navigateToPayment)
+        CheckoutScreen(navController::navigateUp, navController::navigateToPayment)
         paymentScreen(navController::navigateUp, navController::navigateToSummary)
         summaryScreen(navController::popToProducts)
     }

@@ -32,7 +32,7 @@ import com.devmoskal.core.designsystem.theme.component.ErrorDialog
 import com.devmoskal.feature.purchase.R
 
 @Composable
-fun checkoutScreen(
+fun CheckoutScreen(
     uiState: CheckoutUiState,
     onBackPressed: () -> Unit,
     onPayClick: () -> Unit,
@@ -123,6 +123,6 @@ private fun Header(uiState: CheckoutUiState) {
 @Composable
 fun DefaultPreview() {
     DNATaskAndroidTheme {
-        checkoutScreen(CheckoutUiState.Data(5L), {}, {}, { true })
+        CheckoutScreen(CheckoutUiState.Data(5L), {}, {}, { true })
     }
 }

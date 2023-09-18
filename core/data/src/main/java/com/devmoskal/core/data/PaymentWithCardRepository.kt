@@ -3,9 +3,9 @@ package com.devmoskal.core.data
 import com.devmoskal.core.common.Result
 import com.devmoskal.core.common.di.DefaultDispatcher
 import com.devmoskal.core.data.model.PaymentError
-import com.devmoskal.core.datasource.TransactionDataSource
+import com.devmoskal.core.data.model.TransactionEvent
 import com.devmoskal.core.model.CardData
-import com.devmoskal.core.model.Transaction
+import com.devmoskal.core.model.TransactionSessionData
 import com.devmoskal.core.network.PaymentApiClient
 import com.devmoskal.core.network.model.PaymentRequest
 import com.devmoskal.core.network.model.PaymentStatus
@@ -21,11 +21,10 @@ import javax.inject.Named
 
 
 internal class PaymentWithCardRepository @Inject constructor(
-    private val productRepository: ProductRepository,
     private val cardReaderService: CardReaderService,
-    private val transactionDataSource: TransactionDataSource,
+    private val session: TransactionSession,
     private val paymentApiClient: PaymentApiClient,
-    @Named("TransactionMutex") private val mutex: Mutex,
+    @Named("SessionMutex") private val mutex: Mutex,
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : PaymentRepository {
 
@@ -37,15 +36,14 @@ internal class PaymentWithCardRepository @Inject constructor(
     }
 
     private suspend fun makePayment(cardData: CardData): Result<Unit, PaymentError> = mutex.withLock {
-        val transaction = transactionDataSource.transaction.value
-            ?: return Result.Failure(PaymentError.TransactionNotFound)
+        val sessionData = session.state.value ?: return Result.Failure(PaymentError.TransactionNotFound)
 
-        val paymentRequest = generatePaymentRequest(cardData, transaction)
+        val paymentRequest = generatePaymentRequest(cardData, sessionData)
 
         return when (paymentApiClient.pay(paymentRequest).status) {
             PaymentStatus.SUCCESS -> {
-                transactionDataSource.markAsPaid()
-                Result.Success(Unit)
+                session.process(TransactionEvent.Pay(cardData.token))
+                Result.Success
             }
 
             PaymentStatus.FAILED -> Result.Failure(PaymentError.InternalPaymentError)
@@ -65,13 +63,11 @@ internal class PaymentWithCardRepository @Inject constructor(
         }
     }
 
-    private suspend fun generatePaymentRequest(cardData: CardData, transaction: Transaction) =
+    private fun generatePaymentRequest(cardData: CardData, sessionData: TransactionSessionData) =
         PaymentRequest(
-            transaction.transactionID,
-            calculateSum(transaction.order),
-            transaction.currency,
+            sessionData.transactionID,
+            sessionData.totalValue,
+            sessionData.currency,
             cardData.token
         )
-
-    private suspend fun calculateSum(order: Map<String, Long>) = productRepository.calculateTotalValue(order)
 }

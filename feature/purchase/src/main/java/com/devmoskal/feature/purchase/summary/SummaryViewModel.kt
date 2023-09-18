@@ -2,7 +2,6 @@ package com.devmoskal.feature.purchase.summary
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.devmoskal.core.data.CartRepository
 import com.devmoskal.core.data.PurchaseRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +12,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SummaryViewModel @Inject constructor(
-    private val cartRepository: CartRepository,
     private val purchaseRepository: PurchaseRepository,
 ) : ViewModel() {
 

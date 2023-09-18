@@ -11,6 +11,7 @@ sealed class Result<out DATA, out ERROR> {
     val isSuccess get() = this is Success<DATA>
     val isFailure get() = this is Failure<ERROR>
 
+
     suspend fun onFailure(onFailure: suspend (ERROR) -> Unit): Result<DATA, ERROR> {
         if (this is Failure<ERROR>) onFailure(error)
         return this
@@ -19,5 +20,12 @@ sealed class Result<out DATA, out ERROR> {
     suspend fun onSuccess(onSuccess: suspend (DATA) -> Unit): Result<DATA, ERROR> {
         if (this is Success<DATA>) onSuccess(data)
         return this
+    }
+
+    companion object {
+        /**
+         * Syntax sugar for Success without data
+         */
+        val Success = Success(Unit)
     }
 }

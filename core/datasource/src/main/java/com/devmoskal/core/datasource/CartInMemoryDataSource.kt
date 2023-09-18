@@ -25,4 +25,8 @@ internal class CartInMemoryDataSource @Inject constructor() : CartDataSource {
         }
         _cart.value = newMap.toMap()
     }
+
+    override fun clear() {
+        _cart.value = emptyMap()
+    }
 }

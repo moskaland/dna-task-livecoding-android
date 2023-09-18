@@ -82,6 +82,6 @@ internal fun SuccessContent(navigateOutOfPurchaseFlow: () -> Unit) {
 @Composable
 fun DefaultPreview() {
     DNATaskAndroidTheme {
-        SummaryScreen(SummaryUiState.Success, {})
+        SummaryScreen(SummaryUiState.Success) {}
     }
 }

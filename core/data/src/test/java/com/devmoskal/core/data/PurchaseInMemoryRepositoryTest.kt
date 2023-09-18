@@ -3,13 +3,11 @@ package com.devmoskal.core.data
 import android.util.Log
 import com.devmoskal.core.common.Result
 import com.devmoskal.core.data.model.PurchaseErrors
-import com.devmoskal.core.datasource.TransactionDataSource
-import com.devmoskal.core.model.Transaction
+import com.devmoskal.core.model.TransactionSessionData
 import com.devmoskal.core.model.TransactionStatus
 import com.devmoskal.core.network.PurchaseApiClient
 import com.devmoskal.core.network.model.PurchaseResponse
 import com.devmoskal.core.network.model.PurchaseStatusResponse
-import com.devmoskal.core.service.cardReader.CardReaderService
 import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -28,11 +26,11 @@ import org.junit.Test
 
 class PurchaseInMemoryRepositoryTest {
     private val purchaseApiClient: PurchaseApiClient = mockk()
-    private val transactionDataSource: TransactionDataSource = mockk()
-    private val cardReaderService: CardReaderService = mockk()
+    private val transactionSession: TransactionSession = mockk()
+    private val cartRepository: CartRepository = mockk()
     private val dispatcher: CoroutineDispatcher = StandardTestDispatcher()
     private val purchaseInMemoryRepository =
-        PurchaseInMemoryRepository(purchaseApiClient, transactionDataSource, cardReaderService, Mutex(), dispatcher)
+        PurchaseInMemoryRepository(purchaseApiClient, transactionSession, cartRepository, Mutex(), dispatcher)
 
     @Test
     fun `when initiating purchase with no ongoing transaction, start transaction and return success`() =
@@ -40,15 +38,16 @@ class PurchaseInMemoryRepositoryTest {
             // Given
             val purchaseResponse = PurchaseResponse(mockk(), "transactionID", TransactionStatus.INITIATED)
             coEvery { purchaseApiClient.initiatePurchaseTransaction(any()) } returns purchaseResponse
-            coEvery { transactionDataSource.transaction } returns flowOf(null).stateIn(this)
-            coEvery { transactionDataSource.setTransaction(any()) } just Runs
+            coEvery { transactionSession.state } returns flowOf(null).stateIn(this)
+            coEvery { transactionSession.process(any()) } returns Result.Success
+            coEvery { cartRepository.calculateTotalValue() } returns 15.0
 
             // When
             val result = purchaseInMemoryRepository.initiateTransaction(mockk())
 
             // Then
-            coVerify { transactionDataSource.setTransaction(any()) }
-        assertThat(result).isInstanceOf(Result.Success::class.java)
+            coVerify { transactionSession.process(any()) }
+            assertThat(result).isInstanceOf(Result.Success::class.java)
     }
 
     @Test
@@ -59,7 +58,7 @@ class PurchaseInMemoryRepositoryTest {
             every { Log.e(any(), any()) } returns 0
             val purchaseResponse = PurchaseResponse(mockk(), "transactionID", TransactionStatus.INITIATED)
             coEvery { purchaseApiClient.initiatePurchaseTransaction(any()) } returns purchaseResponse
-            coEvery { transactionDataSource.transaction } returns flowOf<Transaction>(mockk()).stateIn(this)
+            coEvery { transactionSession.state } returns flowOf<TransactionSessionData>(mockk()).stateIn(this)
 
             // When
             purchaseInMemoryRepository.initiateTransaction(mockk())
@@ -76,8 +75,8 @@ class PurchaseInMemoryRepositoryTest {
         // Given
         val failedPurchaseResponse = PurchaseResponse(mockk(), "transactionID", TransactionStatus.FAILED)
         coEvery { purchaseApiClient.initiatePurchaseTransaction(any()) } returns failedPurchaseResponse
-        coEvery { transactionDataSource.transaction } returns flowOf(null).stateIn(this)
-        coEvery { transactionDataSource.setTransaction(any()) } just Runs
+        coEvery { transactionSession.state } returns flowOf(null).stateIn(this)
+        coEvery { transactionSession.process(any()) } returns Result.Success
 
         // When
         val result = purchaseInMemoryRepository.initiateTransaction(mockk())
@@ -90,7 +89,7 @@ class PurchaseInMemoryRepositoryTest {
     @Test
     fun `when cancelling transaction with no ongoing transaction, should return success`() = runTest(dispatcher) {
         // Given
-        coEvery { transactionDataSource.transaction.value } returns null
+        coEvery { transactionSession.state.value } returns null
 
         // When
         val result = purchaseInMemoryRepository.cancelOngoingTransaction()
@@ -103,20 +102,21 @@ class PurchaseInMemoryRepositoryTest {
     fun `when cancelling transaction in INITIATED state and cancellation API succeed then return success`() =
         runTest(dispatcher) {
             // Given
-            val ongoingTransaction = Transaction("transactionID", TransactionStatus.INITIATED, mockk())
-            coEvery { transactionDataSource.transaction.value } returns ongoingTransaction
+            val ongoingTransaction =
+                TransactionSessionData("transactionID", TransactionStatus.INITIATED, emptyMap(), 0.0)
+            coEvery { transactionSession.state.value } returns ongoingTransaction
             coEvery { purchaseApiClient.cancel(any()) } returns PurchaseStatusResponse(
                 "transactionID",
                 TransactionStatus.CANCELLED
             )
-            coEvery { transactionDataSource.clear() } just Runs
+            coEvery { transactionSession.clear() } just Runs
 
             // When
             val result = purchaseInMemoryRepository.cancelOngoingTransaction()
 
             // Then
             coVerify { purchaseApiClient.cancel(any()) }
-            coVerify { transactionDataSource.clear() }
+            coVerify { transactionSession.clear() }
             assertThat(result).isInstanceOf(Result.Success::class.java)
         }
 
@@ -124,20 +124,21 @@ class PurchaseInMemoryRepositoryTest {
     fun `when cancelling transaction in INITIATED state and cancellation API failed then return failure`() =
         runTest(dispatcher) {
             // Given
-            val ongoingTransaction = Transaction("transactionID", TransactionStatus.INITIATED, mockk())
-            coEvery { transactionDataSource.transaction.value } returns ongoingTransaction
+            val ongoingTransaction =
+                TransactionSessionData("transactionID", TransactionStatus.INITIATED, emptyMap(), 0.0)
+            coEvery { transactionSession.state.value } returns ongoingTransaction
             coEvery { purchaseApiClient.cancel(any()) } returns PurchaseStatusResponse(
                 "transactionID",
                 TransactionStatus.FAILED
             )
-            coEvery { transactionDataSource.clear() } just Runs
+            coEvery { transactionSession.clear() } just Runs
 
             // When
             val result = purchaseInMemoryRepository.cancelOngoingTransaction()
 
             // Then
             coVerify { purchaseApiClient.cancel(any()) }
-            coVerify(inverse = true) { transactionDataSource.clear() }
+            coVerify(inverse = true) { transactionSession.clear() }
             assertThat(result).isInstanceOf(Result.Failure::class.java)
         }
 
@@ -145,20 +146,21 @@ class PurchaseInMemoryRepositoryTest {
     fun `when cancelling transaction in state other than INITIATED then do not call cancellation API yet clear transaction and return success`() =
         runTest(dispatcher) {
             // Given
-            val ongoingTransaction = Transaction("transactionID", TransactionStatus.CONFIRMED, mockk())
-            coEvery { transactionDataSource.transaction.value } returns ongoingTransaction
+            val ongoingTransaction =
+                TransactionSessionData("transactionID", TransactionStatus.CONFIRMED, emptyMap(), 0.0)
+            coEvery { transactionSession.state.value } returns ongoingTransaction
             coEvery { purchaseApiClient.cancel(any()) } returns PurchaseStatusResponse(
                 "transactionID",
                 TransactionStatus.CANCELLED
             )
-            coEvery { transactionDataSource.clear() } just Runs
+            coEvery { transactionSession.clear() } just Runs
 
             // When
             val result = purchaseInMemoryRepository.cancelOngoingTransaction()
 
             // Then
             coVerify(inverse = true) { purchaseApiClient.cancel(any()) }
-            coVerify { transactionDataSource.clear() }
+            coVerify { transactionSession.clear() }
             assertThat(result).isInstanceOf(Result.Success::class.java)
         }
 }

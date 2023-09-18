@@ -8,13 +8,13 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 
-class TransactionInMemoryDataSourceTest {
+class PurchaseSessionInMemoryDataSourceTest {
 
-    private lateinit var transactionInMemoryDataSource: TransactionInMemoryDataSource
+    private lateinit var purchaseSessionInMemoryDataSource: PurchaseSessionInMemoryDataSource
 
     @Before
     fun setUp() {
-        transactionInMemoryDataSource = TransactionInMemoryDataSource()
+        purchaseSessionInMemoryDataSource = PurchaseSessionInMemoryDataSource()
     }
 
     @Test
@@ -23,31 +23,31 @@ class TransactionInMemoryDataSourceTest {
         val transaction = Transaction("id", mockk(), mockk())
 
         // When
-        transactionInMemoryDataSource.setTransaction(transaction)
+        purchaseSessionInMemoryDataSource.setTransaction(transaction)
 
         // Then
-        assertThat(transactionInMemoryDataSource.transaction.first()).isEqualTo(transaction)
+        assertThat(purchaseSessionInMemoryDataSource.data.first()).isEqualTo(transaction)
     }
 
     @Test
     fun `when data source is initialized, it should be null`() = runTest {
         // Given
         // When
-        transactionInMemoryDataSource.clear()
+        purchaseSessionInMemoryDataSource.clear()
 
         // Then
-        assertThat(transactionInMemoryDataSource.transaction.first()).isNull()
+        assertThat(purchaseSessionInMemoryDataSource.data.first()).isNull()
     }
 
     @Test
     fun `when clearing transaction it should be null`() = runTest {
         // Given
-        transactionInMemoryDataSource.setTransaction(mockk())
+        purchaseSessionInMemoryDataSource.setData(mockk())
 
         // When
-        transactionInMemoryDataSource.clear()
+        purchaseSessionInMemoryDataSource.clear()
 
         // Then
-        assertThat(transactionInMemoryDataSource.transaction.first()).isNull()
+        assertThat(purchaseSessionInMemoryDataSource.data.first()).isNull()
     }
 }

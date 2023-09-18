@@ -2,8 +2,8 @@ package com.devmoskal.core.datasource.di
 
 import com.devmoskal.core.datasource.CartDataSource
 import com.devmoskal.core.datasource.CartInMemoryDataSource
-import com.devmoskal.core.datasource.TransactionDataSource
-import com.devmoskal.core.datasource.TransactionInMemoryDataSource
+import com.devmoskal.core.datasource.PurchaseSessionDataSource
+import com.devmoskal.core.datasource.PurchaseSessionInMemoryDataSource
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -24,5 +24,5 @@ internal interface InternalDataModule {
 
     @Binds
     @Singleton
-    fun bindsTransactionDataSource(transactionInMemoryDataSource: TransactionInMemoryDataSource): TransactionDataSource
+    fun bindsPurchaseSessionDataSource(purchaseSessionInMemoryDataSource: PurchaseSessionInMemoryDataSource): PurchaseSessionDataSource
 }

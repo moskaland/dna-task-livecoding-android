@@ -8,6 +8,8 @@ import com.devmoskal.core.data.ProductNetworkRepository
 import com.devmoskal.core.data.ProductRepository
 import com.devmoskal.core.data.PurchaseInMemoryRepository
 import com.devmoskal.core.data.PurchaseRepository
+import com.devmoskal.core.data.PurchaseSession
+import com.devmoskal.core.data.StateMachinePurchaseSession
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -36,6 +38,9 @@ internal interface InternalRepositoryModule {
 
     @Binds
     fun bindsPaymentRepository(paymentWithCardRepository: PaymentWithCardRepository): PaymentRepository
+
+    @Binds
+    fun bindsPurchaseSession(stateMachinePurchaseSession: StateMachinePurchaseSession): PurchaseSession
 }
 
 @Module
@@ -43,6 +48,6 @@ internal interface InternalRepositoryModule {
 internal object InternalDataModule {
     @Provides
     @Singleton
-    @Named("TransactionMutex")
+    @Named("SessionMutex")
     fun provideTransactionMutex() = Mutex()
 }

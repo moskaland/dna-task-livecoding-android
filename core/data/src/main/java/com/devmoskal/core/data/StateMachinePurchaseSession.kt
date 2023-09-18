@@ -57,7 +57,8 @@ internal class StateMachinePurchaseSession @Inject constructor(
                 is Initialize -> PurchaseSessionData(
                     event.transaction.transactionID,
                     event.transaction.status,
-                    event.transaction.order
+                    event.transaction.order,
+                    event.totalValue
                 )
 
                 Cancel -> currentData?.copy(status = TransactionStatus.CANCELLED)

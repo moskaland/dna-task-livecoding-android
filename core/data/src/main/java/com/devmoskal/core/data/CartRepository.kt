@@ -8,4 +8,10 @@ interface CartRepository {
     fun addToCart(id: String, quantity: Long = 1)
     fun removeFromCart(id: String, quantity: Long = 1)
     fun clear()
+
+    /**
+     * Calculate total deductible amount of items in the cart.
+     * @return Total order value in EUR; multiple currency is not supported;
+     */
+    suspend fun calculateTotalValue(): Double
 }

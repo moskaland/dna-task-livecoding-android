@@ -81,7 +81,12 @@ internal class PurchaseInMemoryRepository @Inject constructor(
         withContext(ioDispatcher) {
             val response = purchaseApiClient.initiatePurchaseTransaction(PurchaseRequest(order))
             if (response.transactionStatus == TransactionStatus.INITIATED) {
-                session.process(PurchaseEvent.Initialize(response.toTransaction()))
+                session.process(
+                    PurchaseEvent.Initialize(
+                        response.toTransaction(),
+                        cartRepository.calculateTotalValue()
+                    )
+                )
                 Result.Success
             } else {
                 Result.Failure(PurchaseErrors.GeneralError)

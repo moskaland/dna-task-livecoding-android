@@ -21,7 +21,6 @@ import javax.inject.Named
 
 
 internal class PaymentWithCardRepository @Inject constructor(
-    private val productRepository: ProductRepository,
     private val cardReaderService: CardReaderService,
     private val session: PurchaseSession,
     private val paymentApiClient: PaymentApiClient,
@@ -64,13 +63,11 @@ internal class PaymentWithCardRepository @Inject constructor(
         }
     }
 
-    private suspend fun generatePaymentRequest(cardData: CardData, transaction: PurchaseSessionData) =
+    private fun generatePaymentRequest(cardData: CardData, sessionData: PurchaseSessionData) =
         PaymentRequest(
-            transaction.transactionID,
-            calculateSum(transaction.order),
-            transaction.currency,
+            sessionData.transactionID,
+            sessionData.totalValue,
+            sessionData.currency,
             cardData.token
         )
-
-    private suspend fun calculateSum(order: Map<String, Long>) = productRepository.calculateTotalValue(order)
 }

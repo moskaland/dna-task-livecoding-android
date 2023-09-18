@@ -3,7 +3,7 @@ package com.devmoskal.core.data.model
 import com.devmoskal.core.model.Transaction
 
 sealed class PurchaseEvent {
-    data class Initialize(val transaction: Transaction) : PurchaseEvent()
+    data class Initialize(val transaction: Transaction, val totalValue: Double) : PurchaseEvent()
     data class Pay(val cardToken: String) : PurchaseEvent()
     object Confirm : PurchaseEvent()
     object Cancel : PurchaseEvent()

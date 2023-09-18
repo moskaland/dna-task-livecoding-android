@@ -4,6 +4,7 @@ data class PurchaseSessionData(
     val transactionID: String,
     val status: TransactionStatus,
     val order: Map<String, Long>,
+    val totalValue: Double,
     val currency: String = "EUR", // fixed in MVP
     val paymentInfo: PaymentInfo = PaymentInfo.Unpaid,
 )

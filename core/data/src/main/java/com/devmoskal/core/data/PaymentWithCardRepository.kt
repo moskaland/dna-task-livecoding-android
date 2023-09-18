@@ -36,7 +36,7 @@ internal class PaymentWithCardRepository @Inject constructor(
         }
     }
 
-    override suspend fun refund(): Result<Unit, PaymentError> = mutex.withLock {
+    override suspend fun refund(): Result<Unit, PaymentError> = mutex.withLock(defaultDispatcher) {
         val sessionData = session.state.value ?: return Result.Failure(PaymentError.TransactionNotFound)
 
         val token = (sessionData.paymentInfo as? PaymentInfo.Paid)?.cardToken
@@ -54,16 +54,17 @@ internal class PaymentWithCardRepository @Inject constructor(
         }
     }
 
-    private suspend fun makePayment(cardData: CardData): Result<Unit, PaymentError> = mutex.withLock {
-        val sessionData = session.state.value ?: return Result.Failure(PaymentError.TransactionNotFound)
+    private suspend fun makePayment(cardData: CardData): Result<Unit, PaymentError> =
+        mutex.withLock(defaultDispatcher) {
+            val sessionData = session.state.value ?: return Result.Failure(PaymentError.TransactionNotFound)
 
-        val paymentRequest = generatePaymentRequest(cardData.token, sessionData)
+            val paymentRequest = generatePaymentRequest(cardData.token, sessionData)
 
-        return when (paymentApiClient.pay(paymentRequest).status) {
-            PaymentStatus.SUCCESS -> {
-                session.process(TransactionEvent.Pay(cardData.token))
-                Result.Success
-            }
+            return when (paymentApiClient.pay(paymentRequest).status) {
+                PaymentStatus.SUCCESS -> {
+                    session.process(TransactionEvent.Pay(cardData.token))
+                    Result.Success
+                }
 
             PaymentStatus.FAILED -> Result.Failure(PaymentError.InternalPaymentError)
         }

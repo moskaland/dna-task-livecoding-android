@@ -2,6 +2,7 @@ package com.devmoskal.core.data
 
 import android.util.Log
 import com.devmoskal.core.common.Result
+import com.devmoskal.core.common.di.DefaultDispatcher
 import com.devmoskal.core.common.di.IoDispatcher
 import com.devmoskal.core.data.model.PurchaseErrors
 import com.devmoskal.core.data.model.TransactionEvent
@@ -26,10 +27,11 @@ internal class PurchaseInMemoryRepository @Inject constructor(
     private val cartRepository: CartRepository,
     @Named("SessionMutex") private val mutex: Mutex,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
 ) : PurchaseRepository {
 
     override suspend fun initiateTransaction(order: Map<String, Long>): Result<Unit, PurchaseErrors> {
-        mutex.withLock {
+        mutex.withLock(defaultDispatcher) {
             if (isOngoingTransaction()) {
                 Log.e("PurchaseRepository", "Corrupted state, there should NOT be more than one ongoing payment flow!")
                 return Result.Failure(PurchaseErrors.AnotherTransactionInProgressError)
@@ -39,7 +41,7 @@ internal class PurchaseInMemoryRepository @Inject constructor(
     }
 
     override suspend fun finalizeTransaction(): Result<Unit, PurchaseErrors> {
-        mutex.withLock {
+        mutex.withLock(defaultDispatcher) {
             val transaction = session.state.value ?: return Result.Failure(PurchaseErrors.TransactionNotFound)
 
             val response =
@@ -56,7 +58,7 @@ internal class PurchaseInMemoryRepository @Inject constructor(
     }
 
     override suspend fun cancelOngoingTransaction(): Result<Unit, PurchaseErrors> {
-        mutex.withLock {
+        mutex.withLock(defaultDispatcher) {
             val sessionData = session.state.value
             if (sessionData?.paymentInfo is PaymentInfo.Paid) {
                 // mvp
